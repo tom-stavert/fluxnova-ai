@@ -1,6 +1,7 @@
 package org.finos.fluxnova.ai.mcp.query.model.query;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.finos.fluxnova.bpm.engine.RuntimeService;
 import org.finos.fluxnova.bpm.engine.runtime.ExecutionQuery;
 
 import java.util.List;
@@ -47,7 +48,7 @@ public class ExecutionQueryDto {
     @Schema(description = "Filter by the incident id.")
     private String incidentId;
 
-    @Schema(description = "Filter by the incident type. See the User Guide for a list of incident types.")
+    @Schema(description = "Filter by incident type.", allowableValues = {"failedJob", "failedExternalTask"})
     private String incidentType;
 
     @Schema(description = "Filter by the incident message. Exact match.")
@@ -69,9 +70,10 @@ public class ExecutionQueryDto {
     private Boolean variableValuesIgnoreCase;
 
     /**
-     * Apply all non-null filter criteria from this DTO to the given query.
+     * Create a new ExecutionQuery from the RuntimeService, with all non-null filter criteria applied.
      */
-    public void applyFilters(ExecutionQuery query) {
+    public ExecutionQuery toQuery(RuntimeService runtimeService) {
+        ExecutionQuery query = runtimeService.createExecutionQuery();
         if (executionId != null) {
             query.executionId(executionId);
         }
@@ -126,6 +128,7 @@ public class ExecutionQueryDto {
         if (Boolean.TRUE.equals(variableValuesIgnoreCase)) {
             query.matchVariableValuesIgnoreCase();
         }
+        return query;
     }
 
     // Getters and setters

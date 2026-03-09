@@ -1,5 +1,6 @@
 package org.finos.fluxnova.ai.mcp.query.model.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.finos.fluxnova.bpm.engine.runtime.EventSubscription;
 
 import java.util.Date;
@@ -11,6 +12,7 @@ import java.util.Date;
 public class EventSubscriptionResultDto {
 
     private String id;
+    @Schema(description = "The type of the event subscription.", allowableValues = {"message", "signal", "compensate", "conditional"})
     private String eventType;
     private String eventName;
     private String executionId;

@@ -1,6 +1,7 @@
 package org.finos.fluxnova.ai.mcp.query.model.query;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.finos.fluxnova.bpm.engine.RuntimeService;
 import org.finos.fluxnova.bpm.engine.runtime.VariableInstanceQuery;
 
 import java.util.List;
@@ -56,9 +57,10 @@ public class VariableInstanceQueryDto {
     private Boolean variableValuesIgnoreCase;
 
     /**
-     * Apply all non-null filter criteria from this DTO to the given query.
+     * Create a new VariableInstanceQuery from the RuntimeService, with all non-null filter criteria applied.
      */
-    public void applyFilters(VariableInstanceQuery query) {
+    public VariableInstanceQuery toQuery(RuntimeService runtimeService) {
+        VariableInstanceQuery query = runtimeService.createVariableInstanceQuery();
         if (variableName != null) {
             query.variableName(variableName);
         }
@@ -101,6 +103,7 @@ public class VariableInstanceQueryDto {
         if (Boolean.TRUE.equals(variableValuesIgnoreCase)) {
             query.matchVariableValuesIgnoreCase();
         }
+        return query;
     }
 
     // Getters and setters

@@ -1,11 +1,7 @@
 package org.finos.fluxnova.ai.mcp.query.tools;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.finos.fluxnova.ai.mcp.query.model.dto.*;
 import org.finos.fluxnova.ai.mcp.query.model.query.*;
-import org.finos.fluxnova.bpm.engine.ProcessEngine;
 import org.finos.fluxnova.bpm.engine.RuntimeService;
 import org.finos.fluxnova.bpm.engine.runtime.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,19 +21,13 @@ import static org.mockito.Mockito.*;
 class RuntimeQueryMcpToolsTest {
 
     @Mock
-    private ProcessEngine processEngine;
-
-    @Mock
     private RuntimeService runtimeService;
-
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
     private RuntimeQueryMcpTools tools;
 
     @BeforeEach
     void setUp() {
-        when(processEngine.getRuntimeService()).thenReturn(runtimeService);
-        tools = new RuntimeQueryMcpTools(processEngine, objectMapper);
+        tools = new RuntimeQueryMcpTools(runtimeService);
     }
 
     // ========================================================================
@@ -59,9 +49,9 @@ class RuntimeQueryMcpToolsTest {
         void emptyDto_callsListWithNoFilters() {
             when(query.list()).thenReturn(Collections.emptyList());
 
-            String result = tools.queryProcessInstances(new ProcessInstanceQueryDto());
+            List<ProcessInstanceResultDto> result = tools.queryProcessInstances(new ProcessInstanceQueryDto());
 
-            assertEquals("[]", result);
+            assertTrue(result.isEmpty());
             verify(query).list();
             verify(query, never()).processInstanceId(any());
             verify(query, never()).processDefinitionKey(any());
@@ -75,10 +65,10 @@ class RuntimeQueryMcpToolsTest {
             ProcessInstanceQueryDto dto = new ProcessInstanceQueryDto();
             dto.setProcessInstanceId("pi-1");
 
-            String result = tools.queryProcessInstances(dto);
+            List<ProcessInstanceResultDto> result = tools.queryProcessInstances(dto);
 
             verify(query).processInstanceId("pi-1");
-            assertContains(result, "pi-1");
+            assertFalse(result.isEmpty());
         }
 
         @Test
@@ -483,17 +473,14 @@ class RuntimeQueryMcpToolsTest {
         }
 
         @Test
-        void resultMapping_correctJson() throws JsonProcessingException {
+        void resultMapping_correctJson() {
             ProcessInstance pi = mockProcessInstance("pi-1", "def:1:abc", "order-123", "root-1", "case-1", true, "tenant-a");
             when(query.list()).thenReturn(List.of(pi));
 
-            String result = tools.queryProcessInstances(new ProcessInstanceQueryDto());
+            List<ProcessInstanceResultDto> result = tools.queryProcessInstances(new ProcessInstanceQueryDto());
 
-            List<ProcessInstanceResultDto> parsed = objectMapper.readValue(result,
-                    new TypeReference<List<ProcessInstanceResultDto>>() {});
-
-            assertEquals(1, parsed.size());
-            ProcessInstanceResultDto dto = parsed.get(0);
+            assertEquals(1, result.size());
+            ProcessInstanceResultDto dto = result.get(0);
             assertEquals("pi-1", dto.getId());
             assertEquals("def:1:abc", dto.getProcessDefinitionId());
             assertEquals("order-123", dto.getBusinessKey());
@@ -504,18 +491,16 @@ class RuntimeQueryMcpToolsTest {
         }
 
         @Test
-        void multipleResults() throws JsonProcessingException {
+        void multipleResults() {
             ProcessInstance pi1 = mockProcessInstance("pi-1", "def-1", null, null, null, false, null);
             ProcessInstance pi2 = mockProcessInstance("pi-2", "def-2", "bk-2", null, null, true, "t1");
             when(query.list()).thenReturn(List.of(pi1, pi2));
 
-            String result = tools.queryProcessInstances(new ProcessInstanceQueryDto());
+            List<ProcessInstanceResultDto> result = tools.queryProcessInstances(new ProcessInstanceQueryDto());
 
-            List<ProcessInstanceResultDto> parsed = objectMapper.readValue(result,
-                    new TypeReference<List<ProcessInstanceResultDto>>() {});
-            assertEquals(2, parsed.size());
-            assertEquals("pi-1", parsed.get(0).getId());
-            assertEquals("pi-2", parsed.get(1).getId());
+            assertEquals(2, result.size());
+            assertEquals("pi-1", result.get(0).getId());
+            assertEquals("pi-2", result.get(1).getId());
         }
     }
 
@@ -538,9 +523,9 @@ class RuntimeQueryMcpToolsTest {
         void emptyDto_callsListWithNoFilters() {
             when(query.list()).thenReturn(Collections.emptyList());
 
-            String result = tools.queryExecutions(new ExecutionQueryDto());
+            List<ExecutionResultDto> result = tools.queryExecutions(new ExecutionQueryDto());
 
-            assertEquals("[]", result);
+            assertTrue(result.isEmpty());
             verify(query).list();
         }
 
@@ -743,7 +728,7 @@ class RuntimeQueryMcpToolsTest {
         }
 
         @Test
-        void resultMapping() throws JsonProcessingException {
+        void resultMapping() {
             Execution exec = mock(Execution.class);
             when(exec.getId()).thenReturn("exec-1");
             when(exec.getProcessInstanceId()).thenReturn("pi-1");
@@ -752,15 +737,13 @@ class RuntimeQueryMcpToolsTest {
             when(exec.getTenantId()).thenReturn("t1");
             when(query.list()).thenReturn(List.of(exec));
 
-            String result = tools.queryExecutions(new ExecutionQueryDto());
+            List<ExecutionResultDto> result = tools.queryExecutions(new ExecutionQueryDto());
 
-            List<ExecutionResultDto> parsed = objectMapper.readValue(result,
-                    new TypeReference<List<ExecutionResultDto>>() {});
-            assertEquals(1, parsed.size());
-            assertEquals("exec-1", parsed.get(0).getId());
-            assertEquals("pi-1", parsed.get(0).getProcessInstanceId());
-            assertFalse(parsed.get(0).isSuspended());
-            assertEquals("t1", parsed.get(0).getTenantId());
+            assertEquals(1, result.size());
+            assertEquals("exec-1", result.get(0).getId());
+            assertEquals("pi-1", result.get(0).getProcessInstanceId());
+            assertFalse(result.get(0).isSuspended());
+            assertEquals("t1", result.get(0).getTenantId());
         }
     }
 
@@ -783,9 +766,9 @@ class RuntimeQueryMcpToolsTest {
         void emptyDto_callsListWithNoFilters() {
             when(query.list()).thenReturn(Collections.emptyList());
 
-            String result = tools.queryIncidents(new IncidentQueryDto());
+            List<IncidentResultDto> result = tools.queryIncidents(new IncidentQueryDto());
 
-            assertEquals("[]", result);
+            assertTrue(result.isEmpty());
             verify(query).list();
         }
 
@@ -996,7 +979,7 @@ class RuntimeQueryMcpToolsTest {
         }
 
         @Test
-        void resultMapping() throws JsonProcessingException {
+        void resultMapping() {
             Incident incident = mock(Incident.class);
             when(incident.getId()).thenReturn("inc-1");
             when(incident.getIncidentType()).thenReturn("failedJob");
@@ -1010,15 +993,13 @@ class RuntimeQueryMcpToolsTest {
             when(incident.getIncidentTimestamp()).thenReturn(timestamp);
             when(query.list()).thenReturn(List.of(incident));
 
-            String result = tools.queryIncidents(new IncidentQueryDto());
+            List<IncidentResultDto> result = tools.queryIncidents(new IncidentQueryDto());
 
-            List<IncidentResultDto> parsed = objectMapper.readValue(result,
-                    new TypeReference<List<IncidentResultDto>>() {});
-            assertEquals(1, parsed.size());
-            assertEquals("inc-1", parsed.get(0).getId());
-            assertEquals("failedJob", parsed.get(0).getIncidentType());
-            assertEquals("Error occurred", parsed.get(0).getIncidentMessage());
-            assertEquals("pi-1", parsed.get(0).getProcessInstanceId());
+            assertEquals(1, result.size());
+            assertEquals("inc-1", result.get(0).getId());
+            assertEquals("failedJob", result.get(0).getIncidentType());
+            assertEquals("Error occurred", result.get(0).getIncidentMessage());
+            assertEquals("pi-1", result.get(0).getProcessInstanceId());
         }
     }
 
@@ -1041,9 +1022,9 @@ class RuntimeQueryMcpToolsTest {
         void emptyDto_callsListWithNoFilters() {
             when(query.list()).thenReturn(Collections.emptyList());
 
-            String result = tools.queryEventSubscriptions(new EventSubscriptionQueryDto());
+            List<EventSubscriptionResultDto> result = tools.queryEventSubscriptions(new EventSubscriptionQueryDto());
 
-            assertEquals("[]", result);
+            assertTrue(result.isEmpty());
             verify(query).list();
         }
 
@@ -1156,7 +1137,7 @@ class RuntimeQueryMcpToolsTest {
         }
 
         @Test
-        void resultMapping() throws JsonProcessingException {
+        void resultMapping() {
             EventSubscription es = mock(EventSubscription.class);
             when(es.getId()).thenReturn("es-1");
             when(es.getEventType()).thenReturn("message");
@@ -1169,14 +1150,12 @@ class RuntimeQueryMcpToolsTest {
             when(es.getCreated()).thenReturn(created);
             when(query.list()).thenReturn(List.of(es));
 
-            String result = tools.queryEventSubscriptions(new EventSubscriptionQueryDto());
+            List<EventSubscriptionResultDto> result = tools.queryEventSubscriptions(new EventSubscriptionQueryDto());
 
-            List<EventSubscriptionResultDto> parsed = objectMapper.readValue(result,
-                    new TypeReference<List<EventSubscriptionResultDto>>() {});
-            assertEquals(1, parsed.size());
-            assertEquals("es-1", parsed.get(0).getId());
-            assertEquals("message", parsed.get(0).getEventType());
-            assertEquals("orderReceived", parsed.get(0).getEventName());
+            assertEquals(1, result.size());
+            assertEquals("es-1", result.get(0).getId());
+            assertEquals("message", result.get(0).getEventType());
+            assertEquals("orderReceived", result.get(0).getEventName());
         }
     }
 
@@ -1199,9 +1178,9 @@ class RuntimeQueryMcpToolsTest {
         void emptyDto_callsListWithNoFilters_andDisablesBinaryFetching() {
             when(query.list()).thenReturn(Collections.emptyList());
 
-            String result = tools.queryVariableInstances(new VariableInstanceQueryDto());
+            List<VariableInstanceResultDto> result = tools.queryVariableInstances(new VariableInstanceQueryDto());
 
-            assertEquals("[]", result);
+            assertTrue(result.isEmpty());
             verify(query).disableBinaryFetching();
             verify(query).list();
         }
@@ -1393,7 +1372,7 @@ class RuntimeQueryMcpToolsTest {
         }
 
         @Test
-        void resultMapping() throws JsonProcessingException {
+        void resultMapping() {
             VariableInstance var = mock(VariableInstance.class);
             when(var.getId()).thenReturn("var-1");
             when(var.getName()).thenReturn("orderId");
@@ -1404,20 +1383,18 @@ class RuntimeQueryMcpToolsTest {
             when(var.getTenantId()).thenReturn("t1");
             when(query.list()).thenReturn(List.of(var));
 
-            String result = tools.queryVariableInstances(new VariableInstanceQueryDto());
+            List<VariableInstanceResultDto> result = tools.queryVariableInstances(new VariableInstanceQueryDto());
 
-            List<VariableInstanceResultDto> parsed = objectMapper.readValue(result,
-                    new TypeReference<List<VariableInstanceResultDto>>() {});
-            assertEquals(1, parsed.size());
-            assertEquals("var-1", parsed.get(0).getId());
-            assertEquals("orderId", parsed.get(0).getName());
-            assertEquals("ORD-123", parsed.get(0).getValue());
-            assertEquals("string", parsed.get(0).getTypeName());
-            assertEquals("pi-1", parsed.get(0).getProcessInstanceId());
+            assertEquals(1, result.size());
+            assertEquals("var-1", result.get(0).getId());
+            assertEquals("orderId", result.get(0).getName());
+            assertEquals("ORD-123", result.get(0).getValue());
+            assertEquals("string", result.get(0).getTypeName());
+            assertEquals("pi-1", result.get(0).getProcessInstanceId());
         }
 
         @Test
-        void resultMapping_variableValueError() throws JsonProcessingException {
+        void resultMapping_variableValueError() {
             VariableInstance var = mock(VariableInstance.class);
             when(var.getId()).thenReturn("var-1");
             when(var.getName()).thenReturn("binaryData");
@@ -1425,13 +1402,11 @@ class RuntimeQueryMcpToolsTest {
             when(var.getTypeName()).thenReturn("bytes");
             when(query.list()).thenReturn(List.of(var));
 
-            String result = tools.queryVariableInstances(new VariableInstanceQueryDto());
+            List<VariableInstanceResultDto> result = tools.queryVariableInstances(new VariableInstanceQueryDto());
 
-            List<VariableInstanceResultDto> parsed = objectMapper.readValue(result,
-                    new TypeReference<List<VariableInstanceResultDto>>() {});
-            assertEquals(1, parsed.size());
-            assertNull(parsed.get(0).getValue());
-            assertTrue(parsed.get(0).getErrorMessage().contains("Cannot deserialize"));
+            assertEquals(1, result.size());
+            assertNull(result.get(0).getValue());
+            assertTrue(result.get(0).getErrorMessage().contains("Cannot deserialize"));
         }
     }
 
@@ -1452,7 +1427,4 @@ class RuntimeQueryMcpToolsTest {
         return pi;
     }
 
-    private void assertContains(String json, String expected) {
-        assertTrue(json.contains(expected), "Expected JSON to contain '" + expected + "' but was: " + json);
-    }
 }

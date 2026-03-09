@@ -1,12 +1,9 @@
 package org.finos.fluxnova.ai.mcp.query.tools;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.finos.fluxnova.ai.mcp.query.model.dto.*;
 import org.finos.fluxnova.ai.mcp.query.model.query.*;
-import org.finos.fluxnova.ai.mcp.query.tools.base.AbstractQueryMcpTool;
-import org.finos.fluxnova.bpm.engine.ProcessEngine;
 import org.finos.fluxnova.bpm.engine.RuntimeService;
-import org.finos.fluxnova.bpm.engine.runtime.*;
+import org.finos.fluxnova.bpm.engine.runtime.VariableInstanceQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springaicommunity.mcp.annotation.McpTool;
@@ -24,12 +21,14 @@ import java.util.stream.Collectors;
  * RuntimeService Query API.
  */
 @Component
-public class RuntimeQueryMcpTools extends AbstractQueryMcpTool {
+public class RuntimeQueryMcpTools {
 
     private static final Logger LOG = LoggerFactory.getLogger(RuntimeQueryMcpTools.class);
 
-    public RuntimeQueryMcpTools(ProcessEngine processEngine, ObjectMapper objectMapper) {
-        super(processEngine, objectMapper);
+    private final RuntimeService runtimeService;
+
+    public RuntimeQueryMcpTools(RuntimeService runtimeService) {
+        this.runtimeService = runtimeService;
     }
 
     // ---- Process Instance Query ----
@@ -39,20 +38,15 @@ public class RuntimeQueryMcpTools extends AbstractQueryMcpTool {
             + "Process instances represent individual executions of a process definition (workflow). "
             + "Use this tool to find active or suspended process instances by their definition, business key, "
             + "tenant, incident status, or other attributes. All filter parameters are optional.")
-    public String queryProcessInstances(@McpToolParam ProcessInstanceQueryDto queryDto) {
-        LOG.info("Querying process instances with criteria: {}", serializeToJson(queryDto));
+    public List<ProcessInstanceResultDto> queryProcessInstances(@McpToolParam ProcessInstanceQueryDto queryDto) {
+        LOG.info("Querying process instances with criteria: {}", queryDto);
 
-        RuntimeService runtimeService = getProcessEngine().getRuntimeService();
-        ProcessInstanceQuery query = runtimeService.createProcessInstanceQuery();
-
-        queryDto.applyFilters(query);
-
-        List<ProcessInstanceResultDto> resultDtos = query.list().stream()
+        List<ProcessInstanceResultDto> resultDtos = queryDto.toQuery(runtimeService).list().stream()
                 .map(ProcessInstanceResultDto::fromProcessInstance)
                 .collect(Collectors.toList());
 
         LOG.info("Process instance query returned {} results", resultDtos.size());
-        return serializeToJson(resultDtos);
+        return resultDtos;
     }
 
     // ---- Execution Query ----
@@ -64,20 +58,15 @@ public class RuntimeQueryMcpTools extends AbstractQueryMcpTool {
             + "multi-instance activities create additional concurrent executions. "
             + "Use this tool to inspect execution state, find executions waiting for signals or messages, "
             + "or examine execution-level details. All filter parameters are optional.")
-    public String queryExecutions(@McpToolParam ExecutionQueryDto queryDto) {
-        LOG.info("Querying executions with criteria: {}", serializeToJson(queryDto));
+    public List<ExecutionResultDto> queryExecutions(@McpToolParam ExecutionQueryDto queryDto) {
+        LOG.info("Querying executions with criteria: {}", queryDto);
 
-        RuntimeService runtimeService = getProcessEngine().getRuntimeService();
-        ExecutionQuery query = runtimeService.createExecutionQuery();
-
-        queryDto.applyFilters(query);
-
-        List<ExecutionResultDto> resultDtos = query.list().stream()
+        List<ExecutionResultDto> resultDtos = queryDto.toQuery(runtimeService).list().stream()
                 .map(ExecutionResultDto::fromExecution)
                 .collect(Collectors.toList());
 
         LOG.info("Execution query returned {} results", resultDtos.size());
-        return serializeToJson(resultDtos);
+        return resultDtos;
     }
 
     // ---- Incident Query ----
@@ -88,20 +77,15 @@ public class RuntimeQueryMcpTools extends AbstractQueryMcpTool {
             + "such as failed jobs, failed external tasks, or other error conditions. "
             + "Use this tool to find and diagnose process execution failures. "
             + "All filter parameters are optional.")
-    public String queryIncidents(@McpToolParam IncidentQueryDto queryDto) {
-        LOG.info("Querying incidents with criteria: {}", serializeToJson(queryDto));
+    public List<IncidentResultDto> queryIncidents(@McpToolParam IncidentQueryDto queryDto) {
+        LOG.info("Querying incidents with criteria: {}", queryDto);
 
-        RuntimeService runtimeService = getProcessEngine().getRuntimeService();
-        IncidentQuery query = runtimeService.createIncidentQuery();
-
-        queryDto.applyFilters(query);
-
-        List<IncidentResultDto> resultDtos = query.list().stream()
+        List<IncidentResultDto> resultDtos = queryDto.toQuery(runtimeService).list().stream()
                 .map(IncidentResultDto::fromIncident)
                 .collect(Collectors.toList());
 
         LOG.info("Incident query returned {} results", resultDtos.size());
-        return serializeToJson(resultDtos);
+        return resultDtos;
     }
 
     // ---- Event Subscription Query ----
@@ -112,20 +96,15 @@ public class RuntimeQueryMcpTools extends AbstractQueryMcpTool {
             + "such as a message event, signal event, compensation event, or conditional event. "
             + "Use this tool to find which process instances are waiting for specific events. "
             + "All filter parameters are optional.")
-    public String queryEventSubscriptions(@McpToolParam EventSubscriptionQueryDto queryDto) {
-        LOG.info("Querying event subscriptions with criteria: {}", serializeToJson(queryDto));
+    public List<EventSubscriptionResultDto> queryEventSubscriptions(@McpToolParam EventSubscriptionQueryDto queryDto) {
+        LOG.info("Querying event subscriptions with criteria: {}", queryDto);
 
-        RuntimeService runtimeService = getProcessEngine().getRuntimeService();
-        EventSubscriptionQuery query = runtimeService.createEventSubscriptionQuery();
-
-        queryDto.applyFilters(query);
-
-        List<EventSubscriptionResultDto> resultDtos = query.list().stream()
+        List<EventSubscriptionResultDto> resultDtos = queryDto.toQuery(runtimeService).list().stream()
                 .map(EventSubscriptionResultDto::fromEventSubscription)
                 .collect(Collectors.toList());
 
         LOG.info("Event subscription query returned {} results", resultDtos.size());
-        return serializeToJson(resultDtos);
+        return resultDtos;
     }
 
     // ---- Variable Instance Query ----
@@ -135,22 +114,19 @@ public class RuntimeQueryMcpTools extends AbstractQueryMcpTool {
             + "Variables store data associated with process instances, executions, tasks, or case instances. "
             + "Each variable has a name, type, and value. Use this tool to inspect the current state of "
             + "process data across running or completed activities. All filter parameters are optional.")
-    public String queryVariableInstances(@McpToolParam VariableInstanceQueryDto queryDto) {
-        LOG.info("Querying variable instances with criteria: {}", serializeToJson(queryDto));
+    public List<VariableInstanceResultDto> queryVariableInstances(@McpToolParam VariableInstanceQueryDto queryDto) {
+        LOG.info("Querying variable instances with criteria: {}", queryDto);
 
-        RuntimeService runtimeService = getProcessEngine().getRuntimeService();
-        VariableInstanceQuery query = runtimeService.createVariableInstanceQuery();
+        VariableInstanceQuery query = queryDto.toQuery(runtimeService);
 
         // Disable binary fetching by default to avoid loading large blobs
         query.disableBinaryFetching();
-
-        queryDto.applyFilters(query);
 
         List<VariableInstanceResultDto> resultDtos = query.list().stream()
                 .map(VariableInstanceResultDto::fromVariableInstance)
                 .collect(Collectors.toList());
 
         LOG.info("Variable instance query returned {} results", resultDtos.size());
-        return serializeToJson(resultDtos);
+        return resultDtos;
     }
 }

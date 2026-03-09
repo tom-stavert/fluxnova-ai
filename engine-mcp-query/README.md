@@ -132,8 +132,6 @@ src/main/java/org/finos/fluxnova/ai/mcp/query/
 │       ├── EventSubscriptionQueryDto.java
 │       └── VariableInstanceQueryDto.java
 └── tools/
-    ├── base/
-    │   └── AbstractQueryMcpTool.java         # Shared engine access & serialization
     └── RuntimeQueryMcpTools.java             # MCP tools for RuntimeService queries
 ```
 

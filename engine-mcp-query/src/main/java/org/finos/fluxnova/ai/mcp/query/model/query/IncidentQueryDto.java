@@ -1,6 +1,7 @@
 package org.finos.fluxnova.ai.mcp.query.model.query;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.finos.fluxnova.bpm.engine.RuntimeService;
 import org.finos.fluxnova.bpm.engine.runtime.IncidentQuery;
 
 import java.util.Date;
@@ -16,8 +17,7 @@ public class IncidentQueryDto {
     @Schema(description = "Restricts to incidents that have the given id.")
     private String incidentId;
 
-    @Schema(description = "Restricts to incidents that belong to the given incident type. "
-            + "See the User Guide for a list of incident types.")
+    @Schema(description = "Filter by incident type.", allowableValues = {"failedJob", "failedExternalTask"})
     private String incidentType;
 
     @Schema(description = "Restricts to incidents that have the given incident message.")
@@ -70,9 +70,10 @@ public class IncidentQueryDto {
     private List<String> jobDefinitionIdIn;
 
     /**
-     * Apply all non-null filter criteria from this DTO to the given query.
+     * Create a new IncidentQuery from the RuntimeService, with all non-null filter criteria applied.
      */
-    public void applyFilters(IncidentQuery query) {
+    public IncidentQuery toQuery(RuntimeService runtimeService) {
+        IncidentQuery query = runtimeService.createIncidentQuery();
         if (incidentId != null) {
             query.incidentId(incidentId);
         }
@@ -124,6 +125,7 @@ public class IncidentQueryDto {
         if (jobDefinitionIdIn != null && !jobDefinitionIdIn.isEmpty()) {
             query.jobDefinitionIdIn(jobDefinitionIdIn.toArray(new String[0]));
         }
+        return query;
     }
 
     // Getters and setters

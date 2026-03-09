@@ -1,5 +1,6 @@
 package org.finos.fluxnova.ai.mcp.query.model.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.finos.fluxnova.bpm.engine.runtime.Incident;
 
 import java.util.Date;
@@ -12,6 +13,7 @@ public class IncidentResultDto {
 
     private String id;
     private Date incidentTimestamp;
+    @Schema(description = "The type of the incident.", allowableValues = {"failedJob", "failedExternalTask"})
     private String incidentType;
     private String incidentMessage;
     private String executionId;

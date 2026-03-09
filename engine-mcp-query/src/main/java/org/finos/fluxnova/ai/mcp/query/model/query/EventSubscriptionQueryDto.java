@@ -1,6 +1,7 @@
 package org.finos.fluxnova.ai.mcp.query.model.query;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.finos.fluxnova.bpm.engine.RuntimeService;
 import org.finos.fluxnova.bpm.engine.runtime.EventSubscriptionQuery;
 
 import java.util.List;
@@ -45,9 +46,10 @@ public class EventSubscriptionQueryDto {
     private Boolean includeEventSubscriptionsWithoutTenantId;
 
     /**
-     * Apply all non-null filter criteria from this DTO to the given query.
+     * Create a new EventSubscriptionQuery from the RuntimeService, with all non-null filter criteria applied.
      */
-    public void applyFilters(EventSubscriptionQuery query) {
+    public EventSubscriptionQuery toQuery(RuntimeService runtimeService) {
+        EventSubscriptionQuery query = runtimeService.createEventSubscriptionQuery();
         if (eventSubscriptionId != null) {
             query.eventSubscriptionId(eventSubscriptionId);
         }
@@ -75,6 +77,7 @@ public class EventSubscriptionQueryDto {
         if (Boolean.TRUE.equals(includeEventSubscriptionsWithoutTenantId)) {
             query.includeEventSubscriptionsWithoutTenantId();
         }
+        return query;
     }
 
     // Getters and setters

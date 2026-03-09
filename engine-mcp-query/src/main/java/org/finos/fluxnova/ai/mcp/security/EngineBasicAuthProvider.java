@@ -1,4 +1,4 @@
-package com.fluxnova.scottlogic.mcp;
+package org.finos.fluxnova.ai.mcp.security;
 
 import org.finos.fluxnova.bpm.engine.ProcessEngine;
 import org.springframework.security.authentication.AuthenticationProvider;

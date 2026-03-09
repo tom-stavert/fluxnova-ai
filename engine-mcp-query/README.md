@@ -8,7 +8,9 @@ A read-only [MCP](https://modelcontextprotocol.io/) server extension for the [Fl
 
 ### Available Tools
 
-The extension currently ships one tool component covering the **RuntimeService**:
+The extension ships tool components covering three engine services:
+
+#### RuntimeService (`RuntimeQueryMcpTools`)
 
 | Tool                      | Description                                                                                                 |
 | ------------------------- | ----------------------------------------------------------------------------------------------------------- |
@@ -18,7 +20,20 @@ The extension currently ships one tool component covering the **RuntimeService**
 | `queryEventSubscriptions` | Find which process instances are waiting for specific message, signal, compensation, or conditional events. |
 | `queryVariableInstances`  | Inspect the current values of process variables across instances, executions, or tasks.                     |
 
-All tools accept a single query DTO parameter with optional filter criteria and return results as JSON. Every query DTO includes `sortBy`, `sortOrder`, `firstResult`, and `maxResults` fields for sorting and pagination.
+#### RepositoryService (`RepositoryQueryMcpTools`)
+
+| Tool                       | Description                                                                                    |
+| -------------------------- | ---------------------------------------------------------------------------------------------- |
+| `queryProcessDefinitions`  | Discover available workflow templates, find specific versions, or check deployment status.      |
+| `queryDeployments`         | List deployments by name, source, tenant, or date range.                                       |
+
+#### TaskService (`TaskQueryMcpTools`)
+
+| Tool         | Description                                                                                                        |
+| ------------ | ------------------------------------------------------------------------------------------------------------------ |
+| `queryTasks` | Find user tasks by assignee, candidate group, process context, priority, due dates, delegation state, and more.    |
+
+All tools accept a single query DTO parameter with optional filter criteria and return results as JSON.
 
 ## Requirements
 
@@ -41,12 +56,12 @@ Add the dependency to your Fluxnova Spring Boot application:
 
 The extension uses Spring Boot auto-configuration. Once the JAR is on the classpath, the `QueryMcpAutoConfiguration` class is detected automatically via `META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports`.
 
-No additional configuration is required — the extension picks up the `ProcessEngine` bean already present in your Fluxnova application context.
+No additional configuration is required — the extension picks up the engine service beans already present in your Fluxnova application context.
 
 ## How It Works
 
-1. **Auto-configuration** registers an `ObjectMapper` if not already present and component-scans the extension's packages.
-2. **`RuntimeQueryMcpTools`** is a Spring `@Component` that injects the `ProcessEngine` and exposes `@McpTool`-annotated methods.
+1. **Auto-configuration** component-scans the extension's packages.
+2. **Tool components** (`RuntimeQueryMcpTools`, `RepositoryQueryMcpTools`, `TaskQueryMcpTools`) are Spring `@Component` classes that inject their respective engine service and expose `@McpTool`-annotated methods.
 3. Each tool method:
    - Accepts a query DTO (e.g. `ProcessInstanceQueryDto`) describing the filter criteria.
    - Builds a native engine query (`RuntimeService.createProcessInstanceQuery()`, etc.) by applying only the non-null filters from the DTO.
@@ -124,15 +139,23 @@ src/main/java/org/finos/fluxnova/ai/mcp/query/
 │   │   ├── ExecutionResultDto.java
 │   │   ├── IncidentResultDto.java
 │   │   ├── EventSubscriptionResultDto.java
-│   │   └── VariableInstanceResultDto.java
+│   │   ├── VariableInstanceResultDto.java
+│   │   ├── ProcessDefinitionResultDto.java
+│   │   ├── DeploymentResultDto.java
+│   │   └── TaskResultDto.java
 │   └── query/                                # Query DTOs (tool input)
 │       ├── ProcessInstanceQueryDto.java
 │       ├── ExecutionQueryDto.java
 │       ├── IncidentQueryDto.java
 │       ├── EventSubscriptionQueryDto.java
-│       └── VariableInstanceQueryDto.java
+│       ├── VariableInstanceQueryDto.java
+│       ├── ProcessDefinitionQueryDto.java
+│       ├── DeploymentQueryDto.java
+│       └── TaskQueryDto.java
 └── tools/
-    └── RuntimeQueryMcpTools.java             # MCP tools for RuntimeService queries
+    ├── RuntimeQueryMcpTools.java             # MCP tools for RuntimeService queries
+    ├── RepositoryQueryMcpTools.java          # MCP tools for RepositoryService queries
+    └── TaskQueryMcpTools.java                # MCP tools for TaskService queries
 ```
 
 ## Design Principles

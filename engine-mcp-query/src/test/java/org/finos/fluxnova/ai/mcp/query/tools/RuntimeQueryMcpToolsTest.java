@@ -58,436 +58,107 @@ class RuntimeQueryMcpToolsTest {
         }
 
         @Test
-        void filterByProcessInstanceId() {
-            ProcessInstance pi = mockProcessInstance("pi-1", "def-1", "bk-1", null, null, false, "t1");
-            when(query.list()).thenReturn(List.of(pi));
+        void allFiltersApplied() {
+            when(query.list()).thenReturn(Collections.emptyList());
 
             ProcessInstanceQueryDto dto = new ProcessInstanceQueryDto();
             dto.setProcessInstanceId("pi-1");
-
-            List<ProcessInstanceResultDto> result = tools.queryProcessInstances(dto);
-
-            verify(query).processInstanceId("pi-1");
-            assertFalse(result.isEmpty());
-        }
-
-        @Test
-        void filterByProcessInstanceIds() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            ProcessInstanceQueryDto dto = new ProcessInstanceQueryDto();
             dto.setProcessInstanceIds(Set.of("pi-1", "pi-2"));
-
-            tools.queryProcessInstances(dto);
-
-            verify(query).processInstanceIds(Set.of("pi-1", "pi-2"));
-        }
-
-        @Test
-        void filterByBusinessKey() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            ProcessInstanceQueryDto dto = new ProcessInstanceQueryDto();
             dto.setBusinessKey("order-123");
-
-            tools.queryProcessInstances(dto);
-
-            verify(query).processInstanceBusinessKey("order-123");
-        }
-
-        @Test
-        void filterByBusinessKeyLike() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            ProcessInstanceQueryDto dto = new ProcessInstanceQueryDto();
             dto.setBusinessKeyLike("order-%");
-
-            tools.queryProcessInstances(dto);
-
-            verify(query).processInstanceBusinessKeyLike("order-%");
-        }
-
-        @Test
-        void filterByProcessDefinitionKey() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            ProcessInstanceQueryDto dto = new ProcessInstanceQueryDto();
             dto.setProcessDefinitionKey("myProcess");
-
-            tools.queryProcessInstances(dto);
-
-            verify(query).processDefinitionKey("myProcess");
-        }
-
-        @Test
-        void filterByProcessDefinitionKeyIn() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            ProcessInstanceQueryDto dto = new ProcessInstanceQueryDto();
             dto.setProcessDefinitionKeyIn(List.of("proc1", "proc2"));
-
-            tools.queryProcessInstances(dto);
-
-            verify(query).processDefinitionKeyIn("proc1", "proc2");
-        }
-
-        @Test
-        void filterByProcessDefinitionKeyNotIn() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            ProcessInstanceQueryDto dto = new ProcessInstanceQueryDto();
             dto.setProcessDefinitionKeyNotIn(List.of("excluded1"));
-
-            tools.queryProcessInstances(dto);
-
-            verify(query).processDefinitionKeyNotIn("excluded1");
-        }
-
-        @Test
-        void filterByProcessDefinitionId() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            ProcessInstanceQueryDto dto = new ProcessInstanceQueryDto();
             dto.setProcessDefinitionId("def:1:abc");
-
-            tools.queryProcessInstances(dto);
-
-            verify(query).processDefinitionId("def:1:abc");
-        }
-
-        @Test
-        void filterByDeploymentId() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            ProcessInstanceQueryDto dto = new ProcessInstanceQueryDto();
             dto.setDeploymentId("deploy-1");
-
-            tools.queryProcessInstances(dto);
-
-            verify(query).deploymentId("deploy-1");
-        }
-
-        @Test
-        void filterBySuperProcessInstanceId() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            ProcessInstanceQueryDto dto = new ProcessInstanceQueryDto();
             dto.setSuperProcessInstanceId("super-1");
-
-            tools.queryProcessInstances(dto);
-
-            verify(query).superProcessInstanceId("super-1");
-        }
-
-        @Test
-        void filterBySubProcessInstanceId() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            ProcessInstanceQueryDto dto = new ProcessInstanceQueryDto();
             dto.setSubProcessInstanceId("sub-1");
-
-            tools.queryProcessInstances(dto);
-
-            verify(query).subProcessInstanceId("sub-1");
-        }
-
-        @Test
-        void filterByCaseInstanceId() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            ProcessInstanceQueryDto dto = new ProcessInstanceQueryDto();
             dto.setCaseInstanceId("case-1");
-
-            tools.queryProcessInstances(dto);
-
-            verify(query).caseInstanceId("case-1");
-        }
-
-        @Test
-        void filterBySuperCaseInstanceId() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            ProcessInstanceQueryDto dto = new ProcessInstanceQueryDto();
             dto.setSuperCaseInstanceId("super-case-1");
-
-            tools.queryProcessInstances(dto);
-
-            verify(query).superCaseInstanceId("super-case-1");
-        }
-
-        @Test
-        void filterBySubCaseInstanceId() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            ProcessInstanceQueryDto dto = new ProcessInstanceQueryDto();
             dto.setSubCaseInstanceId("sub-case-1");
-
-            tools.queryProcessInstances(dto);
-
-            verify(query).subCaseInstanceId("sub-case-1");
-        }
-
-        @Test
-        void filterByActiveTrue() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            ProcessInstanceQueryDto dto = new ProcessInstanceQueryDto();
             dto.setActive(true);
-
-            tools.queryProcessInstances(dto);
-
-            verify(query).active();
-        }
-
-        @Test
-        void filterByActiveFalse_doesNotApply() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            ProcessInstanceQueryDto dto = new ProcessInstanceQueryDto();
-            dto.setActive(false);
-
-            tools.queryProcessInstances(dto);
-
-            verify(query, never()).active();
-        }
-
-        @Test
-        void filterByActiveNull_doesNotApply() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            ProcessInstanceQueryDto dto = new ProcessInstanceQueryDto();
-            dto.setActive(null);
-
-            tools.queryProcessInstances(dto);
-
-            verify(query, never()).active();
-        }
-
-        @Test
-        void filterBySuspendedTrue() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            ProcessInstanceQueryDto dto = new ProcessInstanceQueryDto();
             dto.setSuspended(true);
-
-            tools.queryProcessInstances(dto);
-
-            verify(query).suspended();
-        }
-
-        @Test
-        void filterBySuspendedFalse_doesNotApply() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            ProcessInstanceQueryDto dto = new ProcessInstanceQueryDto();
-            dto.setSuspended(false);
-
-            tools.queryProcessInstances(dto);
-
-            verify(query, never()).suspended();
-        }
-
-        @Test
-        void filterByWithIncidentTrue() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            ProcessInstanceQueryDto dto = new ProcessInstanceQueryDto();
             dto.setWithIncident(true);
-
-            tools.queryProcessInstances(dto);
-
-            verify(query).withIncident();
-        }
-
-        @Test
-        void filterByIncidentId() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            ProcessInstanceQueryDto dto = new ProcessInstanceQueryDto();
             dto.setIncidentId("inc-1");
-
-            tools.queryProcessInstances(dto);
-
-            verify(query).incidentId("inc-1");
-        }
-
-        @Test
-        void filterByIncidentType() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            ProcessInstanceQueryDto dto = new ProcessInstanceQueryDto();
             dto.setIncidentType("failedJob");
-
-            tools.queryProcessInstances(dto);
-
-            verify(query).incidentType("failedJob");
-        }
-
-        @Test
-        void filterByIncidentMessage() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            ProcessInstanceQueryDto dto = new ProcessInstanceQueryDto();
             dto.setIncidentMessage("Something went wrong");
-
-            tools.queryProcessInstances(dto);
-
-            verify(query).incidentMessage("Something went wrong");
-        }
-
-        @Test
-        void filterByIncidentMessageLike() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            ProcessInstanceQueryDto dto = new ProcessInstanceQueryDto();
             dto.setIncidentMessageLike("%error%");
-
-            tools.queryProcessInstances(dto);
-
-            verify(query).incidentMessageLike("%error%");
-        }
-
-        @Test
-        void filterByTenantIdIn() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            ProcessInstanceQueryDto dto = new ProcessInstanceQueryDto();
             dto.setTenantIdIn(List.of("t1", "t2"));
-
-            tools.queryProcessInstances(dto);
-
-            verify(query).tenantIdIn("t1", "t2");
-        }
-
-        @Test
-        void filterByTenantIdIn_emptyList_doesNotApply() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            ProcessInstanceQueryDto dto = new ProcessInstanceQueryDto();
-            dto.setTenantIdIn(Collections.emptyList());
-
-            tools.queryProcessInstances(dto);
-
-            verify(query, never()).tenantIdIn(any(String[].class));
-        }
-
-        @Test
-        void filterByWithoutTenantId() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            ProcessInstanceQueryDto dto = new ProcessInstanceQueryDto();
             dto.setWithoutTenantId(true);
-
-            tools.queryProcessInstances(dto);
-
-            verify(query).withoutTenantId();
-        }
-
-        @Test
-        void filterByProcessDefinitionWithoutTenantId() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            ProcessInstanceQueryDto dto = new ProcessInstanceQueryDto();
             dto.setProcessDefinitionWithoutTenantId(true);
-
-            tools.queryProcessInstances(dto);
-
-            verify(query).processDefinitionWithoutTenantId();
-        }
-
-        @Test
-        void filterByActivityIdIn() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            ProcessInstanceQueryDto dto = new ProcessInstanceQueryDto();
             dto.setActivityIdIn(List.of("act1", "act2"));
-
-            tools.queryProcessInstances(dto);
-
-            verify(query).activityIdIn("act1", "act2");
-        }
-
-        @Test
-        void filterByRootProcessInstances() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            ProcessInstanceQueryDto dto = new ProcessInstanceQueryDto();
             dto.setRootProcessInstances(true);
-
-            tools.queryProcessInstances(dto);
-
-            verify(query).rootProcessInstances();
-        }
-
-        @Test
-        void filterByLeafProcessInstances() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            ProcessInstanceQueryDto dto = new ProcessInstanceQueryDto();
             dto.setLeafProcessInstances(true);
-
-            tools.queryProcessInstances(dto);
-
-            verify(query).leafProcessInstances();
-        }
-
-        @Test
-        void filterByVariableNamesIgnoreCase() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            ProcessInstanceQueryDto dto = new ProcessInstanceQueryDto();
             dto.setVariableNamesIgnoreCase(true);
-
-            tools.queryProcessInstances(dto);
-
-            verify(query).matchVariableNamesIgnoreCase();
-        }
-
-        @Test
-        void filterByVariableValuesIgnoreCase() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            ProcessInstanceQueryDto dto = new ProcessInstanceQueryDto();
             dto.setVariableValuesIgnoreCase(true);
 
             tools.queryProcessInstances(dto);
 
+            verify(query).processInstanceId("pi-1");
+            verify(query).processInstanceIds(Set.of("pi-1", "pi-2"));
+            verify(query).processInstanceBusinessKey("order-123");
+            verify(query).processInstanceBusinessKeyLike("order-%");
+            verify(query).processDefinitionKey("myProcess");
+            verify(query).processDefinitionKeyIn("proc1", "proc2");
+            verify(query).processDefinitionKeyNotIn("excluded1");
+            verify(query).processDefinitionId("def:1:abc");
+            verify(query).deploymentId("deploy-1");
+            verify(query).superProcessInstanceId("super-1");
+            verify(query).subProcessInstanceId("sub-1");
+            verify(query).caseInstanceId("case-1");
+            verify(query).superCaseInstanceId("super-case-1");
+            verify(query).subCaseInstanceId("sub-case-1");
+            verify(query).active();
+            verify(query).suspended();
+            verify(query).withIncident();
+            verify(query).incidentId("inc-1");
+            verify(query).incidentType("failedJob");
+            verify(query).incidentMessage("Something went wrong");
+            verify(query).incidentMessageLike("%error%");
+            verify(query).tenantIdIn("t1", "t2");
+            verify(query).withoutTenantId();
+            verify(query).processDefinitionWithoutTenantId();
+            verify(query).activityIdIn("act1", "act2");
+            verify(query).rootProcessInstances();
+            verify(query).leafProcessInstances();
+            verify(query).matchVariableNamesIgnoreCase();
             verify(query).matchVariableValuesIgnoreCase();
         }
 
         @Test
-        void multipleFilters_allApplied() {
-            ProcessInstance pi = mockProcessInstance("pi-1", "def-1", "bk-1", null, null, false, "t1");
-            when(query.list()).thenReturn(List.of(pi));
+        void booleanFalseAndNull_notApplied() {
+            when(query.list()).thenReturn(Collections.emptyList());
 
             ProcessInstanceQueryDto dto = new ProcessInstanceQueryDto();
-            dto.setProcessDefinitionKey("myProcess");
-            dto.setActive(true);
-            dto.setTenantIdIn(List.of("t1"));
+            dto.setActive(false);
+            dto.setSuspended(null);
+            dto.setWithIncident(false);
+            dto.setTenantIdIn(Collections.emptyList());
 
             tools.queryProcessInstances(dto);
 
-            verify(query).processDefinitionKey("myProcess");
-            verify(query).active();
-            verify(query).tenantIdIn("t1");
+            verify(query, never()).active();
+            verify(query, never()).suspended();
+            verify(query, never()).withIncident();
+            verify(query, never()).tenantIdIn(any(String[].class));
         }
 
         @Test
-        void resultMapping_correctJson() {
+        void resultMapping() {
             ProcessInstance pi = mockProcessInstance("pi-1", "def:1:abc", "order-123", "root-1", "case-1", true, "tenant-a");
             when(query.list()).thenReturn(List.of(pi));
 
             List<ProcessInstanceResultDto> result = tools.queryProcessInstances(new ProcessInstanceQueryDto());
 
             assertEquals(1, result.size());
-            ProcessInstanceResultDto dto = result.get(0);
-            assertEquals("pi-1", dto.getId());
-            assertEquals("def:1:abc", dto.getProcessDefinitionId());
-            assertEquals("order-123", dto.getBusinessKey());
-            assertEquals("root-1", dto.getRootProcessInstanceId());
-            assertEquals("case-1", dto.getCaseInstanceId());
-            assertTrue(dto.isSuspended());
-            assertEquals("tenant-a", dto.getTenantId());
+            ProcessInstanceResultDto r = result.get(0);
+            assertEquals("pi-1", r.getId());
+            assertEquals("def:1:abc", r.getProcessDefinitionId());
+            assertEquals("order-123", r.getBusinessKey());
+            assertEquals("root-1", r.getRootProcessInstanceId());
+            assertEquals("case-1", r.getCaseInstanceId());
+            assertTrue(r.isSuspended());
+            assertEquals("tenant-a", r.getTenantId());
         }
 
         @Test
@@ -530,201 +201,63 @@ class RuntimeQueryMcpToolsTest {
         }
 
         @Test
-        void filterByExecutionId() {
+        void allFiltersApplied() {
             when(query.list()).thenReturn(Collections.emptyList());
 
             ExecutionQueryDto dto = new ExecutionQueryDto();
             dto.setExecutionId("exec-1");
-
-            tools.queryExecutions(dto);
-
-            verify(query).executionId("exec-1");
-        }
-
-        @Test
-        void filterByProcessInstanceId() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            ExecutionQueryDto dto = new ExecutionQueryDto();
             dto.setProcessInstanceId("pi-1");
-
-            tools.queryExecutions(dto);
-
-            verify(query).processInstanceId("pi-1");
-        }
-
-        @Test
-        void filterByBusinessKey() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            ExecutionQueryDto dto = new ExecutionQueryDto();
             dto.setBusinessKey("bk-1");
-
-            tools.queryExecutions(dto);
-
-            verify(query).processInstanceBusinessKey("bk-1");
-        }
-
-        @Test
-        void filterByProcessDefinitionId() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            ExecutionQueryDto dto = new ExecutionQueryDto();
             dto.setProcessDefinitionId("def-1");
-
-            tools.queryExecutions(dto);
-
-            verify(query).processDefinitionId("def-1");
-        }
-
-        @Test
-        void filterByProcessDefinitionKey() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            ExecutionQueryDto dto = new ExecutionQueryDto();
             dto.setProcessDefinitionKey("myProcess");
-
-            tools.queryExecutions(dto);
-
-            verify(query).processDefinitionKey("myProcess");
-        }
-
-        @Test
-        void filterByActivityId() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            ExecutionQueryDto dto = new ExecutionQueryDto();
             dto.setActivityId("task1");
-
-            tools.queryExecutions(dto);
-
-            verify(query).activityId("task1");
-        }
-
-        @Test
-        void filterBySignalEventSubscriptionName() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            ExecutionQueryDto dto = new ExecutionQueryDto();
             dto.setSignalEventSubscriptionName("mySignal");
-
-            tools.queryExecutions(dto);
-
-            verify(query).signalEventSubscriptionName("mySignal");
-        }
-
-        @Test
-        void filterByMessageEventSubscriptionName() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            ExecutionQueryDto dto = new ExecutionQueryDto();
             dto.setMessageEventSubscriptionName("myMessage");
-
-            tools.queryExecutions(dto);
-
-            verify(query).messageEventSubscriptionName("myMessage");
-        }
-
-        @Test
-        void filterByActiveTrue() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            ExecutionQueryDto dto = new ExecutionQueryDto();
             dto.setActive(true);
-
-            tools.queryExecutions(dto);
-
-            verify(query).active();
-        }
-
-        @Test
-        void filterByActiveFalse_doesNotApply() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            ExecutionQueryDto dto = new ExecutionQueryDto();
-            dto.setActive(false);
-
-            tools.queryExecutions(dto);
-
-            verify(query, never()).active();
-        }
-
-        @Test
-        void filterBySuspendedTrue() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            ExecutionQueryDto dto = new ExecutionQueryDto();
             dto.setSuspended(true);
-
-            tools.queryExecutions(dto);
-
-            verify(query).suspended();
-        }
-
-        @Test
-        void filterByIncidentFields() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            ExecutionQueryDto dto = new ExecutionQueryDto();
             dto.setIncidentId("inc-1");
             dto.setIncidentType("failedJob");
             dto.setIncidentMessage("Error");
             dto.setIncidentMessageLike("%error%");
-
-            tools.queryExecutions(dto);
-
-            verify(query).incidentId("inc-1");
-            verify(query).incidentType("failedJob");
-            verify(query).incidentMessage("Error");
-            verify(query).incidentMessageLike("%error%");
-        }
-
-        @Test
-        void filterByTenantIdIn() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            ExecutionQueryDto dto = new ExecutionQueryDto();
             dto.setTenantIdIn(List.of("t1"));
-
-            tools.queryExecutions(dto);
-
-            verify(query).tenantIdIn("t1");
-        }
-
-        @Test
-        void filterByWithoutTenantId() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            ExecutionQueryDto dto = new ExecutionQueryDto();
             dto.setWithoutTenantId(true);
-
-            tools.queryExecutions(dto);
-
-            verify(query).withoutTenantId();
-        }
-
-        @Test
-        void filterByVariableNamesIgnoreCase() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            ExecutionQueryDto dto = new ExecutionQueryDto();
             dto.setVariableNamesIgnoreCase(true);
-
-            tools.queryExecutions(dto);
-
-            verify(query).matchVariableNamesIgnoreCase();
-        }
-
-        @Test
-        void filterByVariableValuesIgnoreCase() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            ExecutionQueryDto dto = new ExecutionQueryDto();
             dto.setVariableValuesIgnoreCase(true);
 
             tools.queryExecutions(dto);
 
+            verify(query).executionId("exec-1");
+            verify(query).processInstanceId("pi-1");
+            verify(query).processInstanceBusinessKey("bk-1");
+            verify(query).processDefinitionId("def-1");
+            verify(query).processDefinitionKey("myProcess");
+            verify(query).activityId("task1");
+            verify(query).signalEventSubscriptionName("mySignal");
+            verify(query).messageEventSubscriptionName("myMessage");
+            verify(query).active();
+            verify(query).suspended();
+            verify(query).incidentId("inc-1");
+            verify(query).incidentType("failedJob");
+            verify(query).incidentMessage("Error");
+            verify(query).incidentMessageLike("%error%");
+            verify(query).tenantIdIn("t1");
+            verify(query).withoutTenantId();
+            verify(query).matchVariableNamesIgnoreCase();
             verify(query).matchVariableValuesIgnoreCase();
+        }
+
+        @Test
+        void booleanFalseAndNull_notApplied() {
+            when(query.list()).thenReturn(Collections.emptyList());
+
+            ExecutionQueryDto dto = new ExecutionQueryDto();
+            dto.setActive(false);
+            dto.setSuspended(null);
+
+            tools.queryExecutions(dto);
+
+            verify(query, never()).active();
+            verify(query, never()).suspended();
         }
 
         @Test
@@ -773,208 +306,48 @@ class RuntimeQueryMcpToolsTest {
         }
 
         @Test
-        void filterByIncidentId() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            IncidentQueryDto dto = new IncidentQueryDto();
-            dto.setIncidentId("inc-1");
-
-            tools.queryIncidents(dto);
-
-            verify(query).incidentId("inc-1");
-        }
-
-        @Test
-        void filterByIncidentType() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            IncidentQueryDto dto = new IncidentQueryDto();
-            dto.setIncidentType("failedJob");
-
-            tools.queryIncidents(dto);
-
-            verify(query).incidentType("failedJob");
-        }
-
-        @Test
-        void filterByIncidentMessage() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            IncidentQueryDto dto = new IncidentQueryDto();
-            dto.setIncidentMessage("Error");
-
-            tools.queryIncidents(dto);
-
-            verify(query).incidentMessage("Error");
-        }
-
-        @Test
-        void filterByIncidentMessageLike() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            IncidentQueryDto dto = new IncidentQueryDto();
-            dto.setIncidentMessageLike("%error%");
-
-            tools.queryIncidents(dto);
-
-            verify(query).incidentMessageLike("%error%");
-        }
-
-        @Test
-        void filterByProcessDefinitionId() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            IncidentQueryDto dto = new IncidentQueryDto();
-            dto.setProcessDefinitionId("def-1");
-
-            tools.queryIncidents(dto);
-
-            verify(query).processDefinitionId("def-1");
-        }
-
-        @Test
-        void filterByProcessDefinitionKeyIn() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            IncidentQueryDto dto = new IncidentQueryDto();
-            dto.setProcessDefinitionKeyIn(List.of("proc1", "proc2"));
-
-            tools.queryIncidents(dto);
-
-            verify(query).processDefinitionKeyIn("proc1", "proc2");
-        }
-
-        @Test
-        void filterByProcessInstanceId() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            IncidentQueryDto dto = new IncidentQueryDto();
-            dto.setProcessInstanceId("pi-1");
-
-            tools.queryIncidents(dto);
-
-            verify(query).processInstanceId("pi-1");
-        }
-
-        @Test
-        void filterByExecutionId() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            IncidentQueryDto dto = new IncidentQueryDto();
-            dto.setExecutionId("exec-1");
-
-            tools.queryIncidents(dto);
-
-            verify(query).executionId("exec-1");
-        }
-
-        @Test
-        void filterByTimestampBefore() {
+        void allFiltersApplied() {
             when(query.list()).thenReturn(Collections.emptyList());
             Date before = new Date();
-
-            IncidentQueryDto dto = new IncidentQueryDto();
-            dto.setIncidentTimestampBefore(before);
-
-            tools.queryIncidents(dto);
-
-            verify(query).incidentTimestampBefore(before);
-        }
-
-        @Test
-        void filterByTimestampAfter() {
-            when(query.list()).thenReturn(Collections.emptyList());
             Date after = new Date();
 
             IncidentQueryDto dto = new IncidentQueryDto();
+            dto.setIncidentId("inc-1");
+            dto.setIncidentType("failedJob");
+            dto.setIncidentMessage("Error");
+            dto.setIncidentMessageLike("%error%");
+            dto.setProcessDefinitionId("def-1");
+            dto.setProcessDefinitionKeyIn(List.of("proc1", "proc2"));
+            dto.setProcessInstanceId("pi-1");
+            dto.setExecutionId("exec-1");
+            dto.setIncidentTimestampBefore(before);
             dto.setIncidentTimestampAfter(after);
-
-            tools.queryIncidents(dto);
-
-            verify(query).incidentTimestampAfter(after);
-        }
-
-        @Test
-        void filterByActivityId() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            IncidentQueryDto dto = new IncidentQueryDto();
             dto.setActivityId("act-1");
-
-            tools.queryIncidents(dto);
-
-            verify(query).activityId("act-1");
-        }
-
-        @Test
-        void filterByFailedActivityId() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            IncidentQueryDto dto = new IncidentQueryDto();
             dto.setFailedActivityId("failed-act-1");
-
-            tools.queryIncidents(dto);
-
-            verify(query).failedActivityId("failed-act-1");
-        }
-
-        @Test
-        void filterByCauseIncidentId() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            IncidentQueryDto dto = new IncidentQueryDto();
             dto.setCauseIncidentId("cause-1");
-
-            tools.queryIncidents(dto);
-
-            verify(query).causeIncidentId("cause-1");
-        }
-
-        @Test
-        void filterByRootCauseIncidentId() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            IncidentQueryDto dto = new IncidentQueryDto();
             dto.setRootCauseIncidentId("root-cause-1");
-
-            tools.queryIncidents(dto);
-
-            verify(query).rootCauseIncidentId("root-cause-1");
-        }
-
-        @Test
-        void filterByConfiguration() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            IncidentQueryDto dto = new IncidentQueryDto();
             dto.setConfiguration("config-1");
-
-            tools.queryIncidents(dto);
-
-            verify(query).configuration("config-1");
-        }
-
-        @Test
-        void filterByTenantIdIn() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            IncidentQueryDto dto = new IncidentQueryDto();
             dto.setTenantIdIn(List.of("t1"));
-
-            tools.queryIncidents(dto);
-
-            verify(query).tenantIdIn("t1");
-        }
-
-        @Test
-        void filterByJobDefinitionIdIn() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            IncidentQueryDto dto = new IncidentQueryDto();
             dto.setJobDefinitionIdIn(List.of("jd-1", "jd-2"));
 
             tools.queryIncidents(dto);
 
+            verify(query).incidentId("inc-1");
+            verify(query).incidentType("failedJob");
+            verify(query).incidentMessage("Error");
+            verify(query).incidentMessageLike("%error%");
+            verify(query).processDefinitionId("def-1");
+            verify(query).processDefinitionKeyIn("proc1", "proc2");
+            verify(query).processInstanceId("pi-1");
+            verify(query).executionId("exec-1");
+            verify(query).incidentTimestampBefore(before);
+            verify(query).incidentTimestampAfter(after);
+            verify(query).activityId("act-1");
+            verify(query).failedActivityId("failed-act-1");
+            verify(query).causeIncidentId("cause-1");
+            verify(query).rootCauseIncidentId("root-cause-1");
+            verify(query).configuration("config-1");
+            verify(query).tenantIdIn("t1");
             verify(query).jobDefinitionIdIn("jd-1", "jd-2");
         }
 
@@ -1029,110 +402,30 @@ class RuntimeQueryMcpToolsTest {
         }
 
         @Test
-        void filterByEventSubscriptionId() {
+        void allFiltersApplied() {
             when(query.list()).thenReturn(Collections.emptyList());
 
             EventSubscriptionQueryDto dto = new EventSubscriptionQueryDto();
             dto.setEventSubscriptionId("es-1");
-
-            tools.queryEventSubscriptions(dto);
-
-            verify(query).eventSubscriptionId("es-1");
-        }
-
-        @Test
-        void filterByEventName() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            EventSubscriptionQueryDto dto = new EventSubscriptionQueryDto();
             dto.setEventName("myEvent");
-
-            tools.queryEventSubscriptions(dto);
-
-            verify(query).eventName("myEvent");
-        }
-
-        @Test
-        void filterByEventType() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            EventSubscriptionQueryDto dto = new EventSubscriptionQueryDto();
             dto.setEventType("message");
-
-            tools.queryEventSubscriptions(dto);
-
-            verify(query).eventType("message");
-        }
-
-        @Test
-        void filterByExecutionId() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            EventSubscriptionQueryDto dto = new EventSubscriptionQueryDto();
             dto.setExecutionId("exec-1");
-
-            tools.queryEventSubscriptions(dto);
-
-            verify(query).executionId("exec-1");
-        }
-
-        @Test
-        void filterByProcessInstanceId() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            EventSubscriptionQueryDto dto = new EventSubscriptionQueryDto();
             dto.setProcessInstanceId("pi-1");
-
-            tools.queryEventSubscriptions(dto);
-
-            verify(query).processInstanceId("pi-1");
-        }
-
-        @Test
-        void filterByActivityId() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            EventSubscriptionQueryDto dto = new EventSubscriptionQueryDto();
             dto.setActivityId("act-1");
-
-            tools.queryEventSubscriptions(dto);
-
-            verify(query).activityId("act-1");
-        }
-
-        @Test
-        void filterByTenantIdIn() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            EventSubscriptionQueryDto dto = new EventSubscriptionQueryDto();
             dto.setTenantIdIn(List.of("t1", "t2"));
-
-            tools.queryEventSubscriptions(dto);
-
-            verify(query).tenantIdIn("t1", "t2");
-        }
-
-        @Test
-        void filterByWithoutTenantId() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            EventSubscriptionQueryDto dto = new EventSubscriptionQueryDto();
             dto.setWithoutTenantId(true);
-
-            tools.queryEventSubscriptions(dto);
-
-            verify(query).withoutTenantId();
-        }
-
-        @Test
-        void filterByIncludeEventSubscriptionsWithoutTenantId() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            EventSubscriptionQueryDto dto = new EventSubscriptionQueryDto();
             dto.setIncludeEventSubscriptionsWithoutTenantId(true);
 
             tools.queryEventSubscriptions(dto);
 
+            verify(query).eventSubscriptionId("es-1");
+            verify(query).eventName("myEvent");
+            verify(query).eventType("message");
+            verify(query).executionId("exec-1");
+            verify(query).processInstanceId("pi-1");
+            verify(query).activityId("act-1");
+            verify(query).tenantIdIn("t1", "t2");
+            verify(query).withoutTenantId();
             verify(query).includeEventSubscriptionsWithoutTenantId();
         }
 
@@ -1186,170 +479,40 @@ class RuntimeQueryMcpToolsTest {
         }
 
         @Test
-        void filterByVariableName() {
+        void allFiltersApplied() {
             when(query.list()).thenReturn(Collections.emptyList());
 
             VariableInstanceQueryDto dto = new VariableInstanceQueryDto();
             dto.setVariableName("orderId");
-
-            tools.queryVariableInstances(dto);
-
-            verify(query).variableName("orderId");
-        }
-
-        @Test
-        void filterByVariableNameLike() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            VariableInstanceQueryDto dto = new VariableInstanceQueryDto();
             dto.setVariableNameLike("order%");
-
-            tools.queryVariableInstances(dto);
-
-            verify(query).variableNameLike("order%");
-        }
-
-        @Test
-        void filterByVariableNameIn() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            VariableInstanceQueryDto dto = new VariableInstanceQueryDto();
             dto.setVariableNameIn(List.of("orderId", "status"));
-
-            tools.queryVariableInstances(dto);
-
-            verify(query).variableNameIn("orderId", "status");
-        }
-
-        @Test
-        void filterByProcessInstanceIdIn() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            VariableInstanceQueryDto dto = new VariableInstanceQueryDto();
             dto.setProcessInstanceIdIn(List.of("pi-1", "pi-2"));
-
-            tools.queryVariableInstances(dto);
-
-            verify(query).processInstanceIdIn("pi-1", "pi-2");
-        }
-
-        @Test
-        void filterByExecutionIdIn() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            VariableInstanceQueryDto dto = new VariableInstanceQueryDto();
             dto.setExecutionIdIn(List.of("exec-1"));
-
-            tools.queryVariableInstances(dto);
-
-            verify(query).executionIdIn("exec-1");
-        }
-
-        @Test
-        void filterByCaseInstanceIdIn() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            VariableInstanceQueryDto dto = new VariableInstanceQueryDto();
             dto.setCaseInstanceIdIn(List.of("case-1"));
-
-            tools.queryVariableInstances(dto);
-
-            verify(query).caseInstanceIdIn("case-1");
-        }
-
-        @Test
-        void filterByCaseExecutionIdIn() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            VariableInstanceQueryDto dto = new VariableInstanceQueryDto();
             dto.setCaseExecutionIdIn(List.of("ce-1"));
-
-            tools.queryVariableInstances(dto);
-
-            verify(query).caseExecutionIdIn("ce-1");
-        }
-
-        @Test
-        void filterByTaskIdIn() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            VariableInstanceQueryDto dto = new VariableInstanceQueryDto();
             dto.setTaskIdIn(List.of("task-1"));
-
-            tools.queryVariableInstances(dto);
-
-            verify(query).taskIdIn("task-1");
-        }
-
-        @Test
-        void filterByBatchIdIn() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            VariableInstanceQueryDto dto = new VariableInstanceQueryDto();
             dto.setBatchIdIn(List.of("batch-1"));
-
-            tools.queryVariableInstances(dto);
-
-            verify(query).batchIdIn("batch-1");
-        }
-
-        @Test
-        void filterByActivityInstanceIdIn() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            VariableInstanceQueryDto dto = new VariableInstanceQueryDto();
             dto.setActivityInstanceIdIn(List.of("ai-1"));
-
-            tools.queryVariableInstances(dto);
-
-            verify(query).activityInstanceIdIn("ai-1");
-        }
-
-        @Test
-        void filterByVariableScopeIdIn() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            VariableInstanceQueryDto dto = new VariableInstanceQueryDto();
             dto.setVariableScopeIdIn(List.of("scope-1"));
-
-            tools.queryVariableInstances(dto);
-
-            verify(query).variableScopeIdIn("scope-1");
-        }
-
-        @Test
-        void filterByTenantIdIn() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            VariableInstanceQueryDto dto = new VariableInstanceQueryDto();
             dto.setTenantIdIn(List.of("t1"));
-
-            tools.queryVariableInstances(dto);
-
-            verify(query).tenantIdIn("t1");
-        }
-
-        @Test
-        void filterByVariableNamesIgnoreCase() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            VariableInstanceQueryDto dto = new VariableInstanceQueryDto();
             dto.setVariableNamesIgnoreCase(true);
-
-            tools.queryVariableInstances(dto);
-
-            verify(query).matchVariableNamesIgnoreCase();
-        }
-
-        @Test
-        void filterByVariableValuesIgnoreCase() {
-            when(query.list()).thenReturn(Collections.emptyList());
-
-            VariableInstanceQueryDto dto = new VariableInstanceQueryDto();
             dto.setVariableValuesIgnoreCase(true);
 
             tools.queryVariableInstances(dto);
 
+            verify(query).variableName("orderId");
+            verify(query).variableNameLike("order%");
+            verify(query).variableNameIn("orderId", "status");
+            verify(query).processInstanceIdIn("pi-1", "pi-2");
+            verify(query).executionIdIn("exec-1");
+            verify(query).caseInstanceIdIn("case-1");
+            verify(query).caseExecutionIdIn("ce-1");
+            verify(query).taskIdIn("task-1");
+            verify(query).batchIdIn("batch-1");
+            verify(query).activityInstanceIdIn("ai-1");
+            verify(query).variableScopeIdIn("scope-1");
+            verify(query).tenantIdIn("t1");
+            verify(query).matchVariableNamesIgnoreCase();
             verify(query).matchVariableValuesIgnoreCase();
         }
 

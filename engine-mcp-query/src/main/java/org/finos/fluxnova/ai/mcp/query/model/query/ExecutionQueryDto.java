@@ -11,67 +11,63 @@ import java.util.List;
  * All fields are optional filter criteria.
  */
 @Schema(description = "Query parameters for filtering executions.")
-public class ExecutionQueryDto {
+public record ExecutionQueryDto(
+        @Schema(description = "Filter by the id of the execution.")
+        String executionId,
 
-    @Schema(description = "Filter by the id of the execution.")
-    private String executionId;
+        @Schema(description = "Filter by the id of the process instance the execution belongs to.")
+        String processInstanceId,
 
-    @Schema(description = "Filter by the id of the process instance the execution belongs to.")
-    private String processInstanceId;
+        @Schema(description = "Filter by the business key of the process instances the executions belong to.")
+        String businessKey,
 
-    @Schema(description = "Filter by the business key of the process instances the executions belong to.")
-    private String businessKey;
+        @Schema(description = "Filter by the id of the process definition the executions run on.")
+        String processDefinitionId,
 
-    @Schema(description = "Filter by the id of the process definition the executions run on.")
-    private String processDefinitionId;
+        @Schema(description = "Filter by the key of the process definition the executions run on.")
+        String processDefinitionKey,
 
-    @Schema(description = "Filter by the key of the process definition the executions run on.")
-    private String processDefinitionKey;
+        @Schema(description = "Filter by the id of the activity the execution currently executes.")
+        String activityId,
 
-    @Schema(description = "Filter by the id of the activity the execution currently executes.")
-    private String activityId;
+        @Schema(description = "Select only those executions that expect a signal of the given name.")
+        String signalEventSubscriptionName,
 
-    @Schema(description = "Select only those executions that expect a signal of the given name.")
-    private String signalEventSubscriptionName;
+        @Schema(description = "Select only those executions that expect a message of the given name.")
+        String messageEventSubscriptionName,
 
-    @Schema(description = "Select only those executions that expect a message of the given name.")
-    private String messageEventSubscriptionName;
+        @Schema(description = "Only include active executions. "
+                + "Value may only be true, as false is the default behavior.")
+        Boolean active,
 
-    @Schema(description = "Only include active executions. "
-            + "Value may only be true, as false is the default behavior.")
-    private Boolean active;
+        @Schema(description = "Only include suspended executions. "
+                + "Value may only be true, as false is the default behavior.")
+        Boolean suspended,
 
-    @Schema(description = "Only include suspended executions. "
-            + "Value may only be true, as false is the default behavior.")
-    private Boolean suspended;
+        @Schema(description = "Filter by the incident id.")
+        String incidentId,
 
-    @Schema(description = "Filter by the incident id.")
-    private String incidentId;
+        @Schema(description = "Filter by incident type.", allowableValues = {"failedJob", "failedExternalTask"})
+        String incidentType,
 
-    @Schema(description = "Filter by incident type.", allowableValues = {"failedJob", "failedExternalTask"})
-    private String incidentType;
+        @Schema(description = "Filter by the incident message. Exact match.")
+        String incidentMessage,
 
-    @Schema(description = "Filter by the incident message. Exact match.")
-    private String incidentMessage;
+        @Schema(description = "Filter by the incident message that the parameter is a substring of.")
+        String incidentMessageLike,
 
-    @Schema(description = "Filter by the incident message that the parameter is a substring of.")
-    private String incidentMessageLike;
+        @Schema(description = "Filter by a list of tenant ids. An execution must have one of the given tenant ids.")
+        List<String> tenantIdIn,
 
-    @Schema(description = "Filter by a list of tenant ids. An execution must have one of the given tenant ids.")
-    private List<String> tenantIdIn;
+        @Schema(description = "Only include executions which belong to no tenant.")
+        Boolean withoutTenantId,
 
-    @Schema(description = "Only include executions which belong to no tenant.")
-    private Boolean withoutTenantId;
+        @Schema(description = "Match all variable names case-insensitively when used with variable value filters.")
+        Boolean variableNamesIgnoreCase,
 
-    @Schema(description = "Match all variable names case-insensitively when used with variable value filters.")
-    private Boolean variableNamesIgnoreCase;
-
-    @Schema(description = "Match all variable values case-insensitively when used with variable value filters.")
-    private Boolean variableValuesIgnoreCase;
-
-    /**
-     * Create a new ExecutionQuery from the RuntimeService, with all non-null filter criteria applied.
-     */
+        @Schema(description = "Match all variable values case-insensitively when used with variable value filters.")
+        Boolean variableValuesIgnoreCase
+) {
     public ExecutionQuery toQuery(RuntimeService runtimeService) {
         ExecutionQuery query = runtimeService.createExecutionQuery();
         if (executionId != null) {
@@ -129,151 +125,5 @@ public class ExecutionQueryDto {
             query.matchVariableValuesIgnoreCase();
         }
         return query;
-    }
-
-    // Getters and setters
-
-    public String getExecutionId() {
-        return executionId;
-    }
-
-    public void setExecutionId(String executionId) {
-        this.executionId = executionId;
-    }
-
-    public String getProcessInstanceId() {
-        return processInstanceId;
-    }
-
-    public void setProcessInstanceId(String processInstanceId) {
-        this.processInstanceId = processInstanceId;
-    }
-
-    public String getBusinessKey() {
-        return businessKey;
-    }
-
-    public void setBusinessKey(String businessKey) {
-        this.businessKey = businessKey;
-    }
-
-    public String getProcessDefinitionId() {
-        return processDefinitionId;
-    }
-
-    public void setProcessDefinitionId(String processDefinitionId) {
-        this.processDefinitionId = processDefinitionId;
-    }
-
-    public String getProcessDefinitionKey() {
-        return processDefinitionKey;
-    }
-
-    public void setProcessDefinitionKey(String processDefinitionKey) {
-        this.processDefinitionKey = processDefinitionKey;
-    }
-
-    public String getActivityId() {
-        return activityId;
-    }
-
-    public void setActivityId(String activityId) {
-        this.activityId = activityId;
-    }
-
-    public String getSignalEventSubscriptionName() {
-        return signalEventSubscriptionName;
-    }
-
-    public void setSignalEventSubscriptionName(String signalEventSubscriptionName) {
-        this.signalEventSubscriptionName = signalEventSubscriptionName;
-    }
-
-    public String getMessageEventSubscriptionName() {
-        return messageEventSubscriptionName;
-    }
-
-    public void setMessageEventSubscriptionName(String messageEventSubscriptionName) {
-        this.messageEventSubscriptionName = messageEventSubscriptionName;
-    }
-
-    public Boolean getActive() {
-        return active;
-    }
-
-    public void setActive(Boolean active) {
-        this.active = active;
-    }
-
-    public Boolean getSuspended() {
-        return suspended;
-    }
-
-    public void setSuspended(Boolean suspended) {
-        this.suspended = suspended;
-    }
-
-    public String getIncidentId() {
-        return incidentId;
-    }
-
-    public void setIncidentId(String incidentId) {
-        this.incidentId = incidentId;
-    }
-
-    public String getIncidentType() {
-        return incidentType;
-    }
-
-    public void setIncidentType(String incidentType) {
-        this.incidentType = incidentType;
-    }
-
-    public String getIncidentMessage() {
-        return incidentMessage;
-    }
-
-    public void setIncidentMessage(String incidentMessage) {
-        this.incidentMessage = incidentMessage;
-    }
-
-    public String getIncidentMessageLike() {
-        return incidentMessageLike;
-    }
-
-    public void setIncidentMessageLike(String incidentMessageLike) {
-        this.incidentMessageLike = incidentMessageLike;
-    }
-
-    public List<String> getTenantIdIn() {
-        return tenantIdIn;
-    }
-
-    public void setTenantIdIn(List<String> tenantIdIn) {
-        this.tenantIdIn = tenantIdIn;
-    }
-
-    public Boolean getWithoutTenantId() {
-        return withoutTenantId;
-    }
-
-    public void setWithoutTenantId(Boolean withoutTenantId) {
-        this.withoutTenantId = withoutTenantId;
-    }
-
-    public Boolean getVariableNamesIgnoreCase() {
-        return variableNamesIgnoreCase;
-    }
-
-    public void setVariableNamesIgnoreCase(Boolean variableNamesIgnoreCase) {
-        this.variableNamesIgnoreCase = variableNamesIgnoreCase;
-    }
-
-    public Boolean getVariableValuesIgnoreCase() {
-        return variableValuesIgnoreCase;
-    }
-
-    public void setVariableValuesIgnoreCase(Boolean variableValuesIgnoreCase) {
-        this.variableValuesIgnoreCase = variableValuesIgnoreCase;
     }
 }

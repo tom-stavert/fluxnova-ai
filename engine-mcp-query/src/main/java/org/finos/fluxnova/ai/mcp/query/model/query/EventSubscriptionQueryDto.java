@@ -11,43 +11,39 @@ import java.util.List;
  * All fields are optional filter criteria.
  */
 @Schema(description = "Query parameters for filtering event subscriptions.")
-public class EventSubscriptionQueryDto {
+public record EventSubscriptionQueryDto(
+        @Schema(description = "Only select the subscription with the given id.")
+        String eventSubscriptionId,
 
-    @Schema(description = "Only select the subscription with the given id.")
-    private String eventSubscriptionId;
+        @Schema(description = "Only select subscriptions for events with the given name.")
+        String eventName,
 
-    @Schema(description = "Only select subscriptions for events with the given name.")
-    private String eventName;
+        @Schema(description = "Only select subscriptions for events with the given type.",
+                allowableValues = {"message", "signal", "compensate", "conditional"})
+        String eventType,
 
-    @Schema(description = "Only select subscriptions for events with the given type.",
-            allowableValues = {"message", "signal", "compensate", "conditional"})
-    private String eventType;
+        @Schema(description = "Only select subscriptions that belong to an execution with the given id.")
+        String executionId,
 
-    @Schema(description = "Only select subscriptions that belong to an execution with the given id.")
-    private String executionId;
+        @Schema(description = "Only select subscriptions that belong to a process instance with the given id.")
+        String processInstanceId,
 
-    @Schema(description = "Only select subscriptions that belong to a process instance with the given id.")
-    private String processInstanceId;
+        @Schema(description = "Only select subscriptions that belong to an activity with the given id.")
+        String activityId,
 
-    @Schema(description = "Only select subscriptions that belong to an activity with the given id.")
-    private String activityId;
+        @Schema(description = "Filter by a list of tenant ids. "
+                + "Only select subscriptions that belong to one of the given tenant ids.")
+        List<String> tenantIdIn,
 
-    @Schema(description = "Filter by a list of tenant ids. "
-            + "Only select subscriptions that belong to one of the given tenant ids.")
-    private List<String> tenantIdIn;
+        @Schema(description = "Only select subscriptions which have no tenant id. "
+                + "Value may only be true, as false is the default behavior.")
+        Boolean withoutTenantId,
 
-    @Schema(description = "Only select subscriptions which have no tenant id. "
-            + "Value may only be true, as false is the default behavior.")
-    private Boolean withoutTenantId;
-
-    @Schema(description = "Select event subscriptions which have no tenant id. "
-            + "Can be used in combination with tenantIdIn. "
-            + "Value may only be true, as false is the default behavior.")
-    private Boolean includeEventSubscriptionsWithoutTenantId;
-
-    /**
-     * Create a new EventSubscriptionQuery from the RuntimeService, with all non-null filter criteria applied.
-     */
+        @Schema(description = "Select event subscriptions which have no tenant id. "
+                + "Can be used in combination with tenantIdIn. "
+                + "Value may only be true, as false is the default behavior.")
+        Boolean includeEventSubscriptionsWithoutTenantId
+) {
     public EventSubscriptionQuery toQuery(RuntimeService runtimeService) {
         EventSubscriptionQuery query = runtimeService.createEventSubscriptionQuery();
         if (eventSubscriptionId != null) {
@@ -78,79 +74,5 @@ public class EventSubscriptionQueryDto {
             query.includeEventSubscriptionsWithoutTenantId();
         }
         return query;
-    }
-
-    // Getters and setters
-
-    public String getEventSubscriptionId() {
-        return eventSubscriptionId;
-    }
-
-    public void setEventSubscriptionId(String eventSubscriptionId) {
-        this.eventSubscriptionId = eventSubscriptionId;
-    }
-
-    public String getEventName() {
-        return eventName;
-    }
-
-    public void setEventName(String eventName) {
-        this.eventName = eventName;
-    }
-
-    public String getEventType() {
-        return eventType;
-    }
-
-    public void setEventType(String eventType) {
-        this.eventType = eventType;
-    }
-
-    public String getExecutionId() {
-        return executionId;
-    }
-
-    public void setExecutionId(String executionId) {
-        this.executionId = executionId;
-    }
-
-    public String getProcessInstanceId() {
-        return processInstanceId;
-    }
-
-    public void setProcessInstanceId(String processInstanceId) {
-        this.processInstanceId = processInstanceId;
-    }
-
-    public String getActivityId() {
-        return activityId;
-    }
-
-    public void setActivityId(String activityId) {
-        this.activityId = activityId;
-    }
-
-    public List<String> getTenantIdIn() {
-        return tenantIdIn;
-    }
-
-    public void setTenantIdIn(List<String> tenantIdIn) {
-        this.tenantIdIn = tenantIdIn;
-    }
-
-    public Boolean getWithoutTenantId() {
-        return withoutTenantId;
-    }
-
-    public void setWithoutTenantId(Boolean withoutTenantId) {
-        this.withoutTenantId = withoutTenantId;
-    }
-
-    public Boolean getIncludeEventSubscriptionsWithoutTenantId() {
-        return includeEventSubscriptionsWithoutTenantId;
-    }
-
-    public void setIncludeEventSubscriptionsWithoutTenantId(Boolean includeEventSubscriptionsWithoutTenantId) {
-        this.includeEventSubscriptionsWithoutTenantId = includeEventSubscriptionsWithoutTenantId;
     }
 }

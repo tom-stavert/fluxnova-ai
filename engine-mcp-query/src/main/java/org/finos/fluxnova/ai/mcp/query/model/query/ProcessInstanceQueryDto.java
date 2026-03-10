@@ -4,8 +4,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import org.finos.fluxnova.bpm.engine.RuntimeService;
 import org.finos.fluxnova.bpm.engine.runtime.ProcessInstanceQuery;
 
+import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * DTO for querying process instances via the process engine Query API.
@@ -17,7 +17,7 @@ public record ProcessInstanceQueryDto(
         String processInstanceId,
 
         @Schema(description = "Filter by a list of process instance ids.")
-        Set<String> processInstanceIds,
+        List<String> processInstanceIds,
 
         @Schema(description = "Filter by process instance business key.")
         String businessKey,
@@ -118,7 +118,7 @@ public record ProcessInstanceQueryDto(
             query.processInstanceId(processInstanceId);
         }
         if (processInstanceIds != null && !processInstanceIds.isEmpty()) {
-            query.processInstanceIds(processInstanceIds);
+            query.processInstanceIds(new HashSet<>(processInstanceIds));
         }
         if (businessKey != null) {
             query.processInstanceBusinessKey(businessKey);

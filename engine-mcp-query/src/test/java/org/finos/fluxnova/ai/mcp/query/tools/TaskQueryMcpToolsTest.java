@@ -42,7 +42,7 @@ class TaskQueryMcpToolsTest {
 
     @BeforeEach
     void setUp() {
-        tools = new TaskQueryMcpTools(taskService);
+        tools = new TaskQueryMcpTools(taskService, 200);
     }
 
     // ========================================================================
@@ -64,7 +64,7 @@ class TaskQueryMcpToolsTest {
         void emptyDto_callsListWithNoFilters() {
             when(query.list()).thenReturn(Collections.emptyList());
 
-            List<TaskResultDto> result = tools.queryTasks(emptyDto());
+            List<TaskResultDto> result = tools.queryTasks(emptyDto(), null);
 
             assertTrue(result.isEmpty());
             verify(query).list();
@@ -106,7 +106,7 @@ class TaskQueryMcpToolsTest {
                     null
             );
 
-            tools.queryTasks(dto);
+            tools.queryTasks(dto, null);
 
             verify(query).taskId("task-1");
             verify(query).processInstanceId("pi-1");
@@ -173,7 +173,7 @@ class TaskQueryMcpToolsTest {
                     null
             );
 
-            tools.queryTasks(dto);
+            tools.queryTasks(dto, null);
 
             verify(query).taskIdIn("t1", "t2");
             verify(query).processInstanceIdIn("pi-1", "pi-2");
@@ -219,7 +219,7 @@ class TaskQueryMcpToolsTest {
                     null
             );
 
-            tools.queryTasks(dto);
+            tools.queryTasks(dto, null);
 
             verify(query).taskPriority(5);
             verify(query).taskMaxPriority(10);
@@ -262,7 +262,7 @@ class TaskQueryMcpToolsTest {
                     true
             );
 
-            tools.queryTasks(dto);
+            tools.queryTasks(dto, null);
 
             verify(query).taskAssigned();
             verify(query).taskUnassigned();
@@ -300,7 +300,7 @@ class TaskQueryMcpToolsTest {
                     null
             );
 
-            tools.queryTasks(dto);
+            tools.queryTasks(dto, null);
 
             verify(query).taskDelegationState(DelegationState.PENDING);
         }
@@ -332,7 +332,7 @@ class TaskQueryMcpToolsTest {
                     null
             );
 
-            tools.queryTasks(dto);
+            tools.queryTasks(dto, null);
 
             verify(query, never()).active();
             verify(query, never()).suspended();
@@ -377,7 +377,7 @@ class TaskQueryMcpToolsTest {
             when(task.getTaskState()).thenReturn("Created");
             when(query.list()).thenReturn(List.of(task));
 
-            List<TaskResultDto> result = tools.queryTasks(emptyDto());
+            List<TaskResultDto> result = tools.queryTasks(emptyDto(), null);
 
             assertEquals(1, result.size());
             TaskResultDto r = result.getFirst();
@@ -413,7 +413,7 @@ class TaskQueryMcpToolsTest {
             when(task.getDelegationState()).thenReturn(null);
             when(query.list()).thenReturn(List.of(task));
 
-            List<TaskResultDto> result = tools.queryTasks(emptyDto());
+            List<TaskResultDto> result = tools.queryTasks(emptyDto(), null);
 
             assertEquals(1, result.size());
             assertNull(result.getFirst().delegationState());

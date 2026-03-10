@@ -41,7 +41,7 @@ class RuntimeQueryMcpToolsTest {
 
     @BeforeEach
     void setUp() {
-        tools = new RuntimeQueryMcpTools(runtimeService);
+        tools = new RuntimeQueryMcpTools(runtimeService, 200);
     }
 
     // ========================================================================
@@ -63,7 +63,7 @@ class RuntimeQueryMcpToolsTest {
         void emptyDto_callsListWithNoFilters() {
             when(query.list()).thenReturn(Collections.emptyList());
 
-            List<ProcessInstanceResultDto> result = tools.queryProcessInstances(empty(ProcessInstanceQueryDto.class));
+            List<ProcessInstanceResultDto> result = tools.queryProcessInstances(empty(ProcessInstanceQueryDto.class), null);
 
             assertTrue(result.isEmpty());
             verify(query).list();
@@ -76,7 +76,7 @@ class RuntimeQueryMcpToolsTest {
             when(query.list()).thenReturn(Collections.emptyList());
 
             ProcessInstanceQueryDto dto = new ProcessInstanceQueryDto(
-                    "pi-1", Set.of("pi-1", "pi-2"),
+                    "pi-1", List.of("pi-1", "pi-2"),
                     "order-123", "order-%",
                     "myProcess", List.of("proc1", "proc2"), List.of("excluded1"),
                     "def:1:abc", "deploy-1",
@@ -87,7 +87,7 @@ class RuntimeQueryMcpToolsTest {
                     List.of("act1", "act2"), true, true, true, true
             );
 
-            tools.queryProcessInstances(dto);
+            tools.queryProcessInstances(dto, null);
 
             verify(query).processInstanceId("pi-1");
             verify(query).processInstanceIds(Set.of("pi-1", "pi-2"));
@@ -132,7 +132,7 @@ class RuntimeQueryMcpToolsTest {
                     Collections.emptyList(), null, null, null, null, null, null, null
             );
 
-            tools.queryProcessInstances(dto);
+            tools.queryProcessInstances(dto, null);
 
             verify(query, never()).active();
             verify(query, never()).suspended();
@@ -145,7 +145,7 @@ class RuntimeQueryMcpToolsTest {
             ProcessInstance pi = mockProcessInstance("pi-1", "def:1:abc", "order-123", "root-1", "case-1", true, "tenant-a");
             when(query.list()).thenReturn(List.of(pi));
 
-            List<ProcessInstanceResultDto> result = tools.queryProcessInstances(empty(ProcessInstanceQueryDto.class));
+            List<ProcessInstanceResultDto> result = tools.queryProcessInstances(empty(ProcessInstanceQueryDto.class), null);
 
             assertEquals(1, result.size());
             ProcessInstanceResultDto r = result.getFirst();
@@ -164,7 +164,7 @@ class RuntimeQueryMcpToolsTest {
             ProcessInstance pi2 = mockProcessInstance("pi-2", "def-2", "bk-2", null, null, true, "t1");
             when(query.list()).thenReturn(List.of(pi1, pi2));
 
-            List<ProcessInstanceResultDto> result = tools.queryProcessInstances(empty(ProcessInstanceQueryDto.class));
+            List<ProcessInstanceResultDto> result = tools.queryProcessInstances(empty(ProcessInstanceQueryDto.class), null);
 
             assertEquals(2, result.size());
             assertEquals("pi-1", result.getFirst().id());
@@ -191,7 +191,7 @@ class RuntimeQueryMcpToolsTest {
         void emptyDto_callsListWithNoFilters() {
             when(query.list()).thenReturn(Collections.emptyList());
 
-            List<ExecutionResultDto> result = tools.queryExecutions(empty(ExecutionQueryDto.class));
+            List<ExecutionResultDto> result = tools.queryExecutions(empty(ExecutionQueryDto.class), null);
 
             assertTrue(result.isEmpty());
             verify(query).list();
@@ -209,7 +209,7 @@ class RuntimeQueryMcpToolsTest {
                     List.of("t1"), true, true, true
             );
 
-            tools.queryExecutions(dto);
+            tools.queryExecutions(dto, null);
 
             verify(query).executionId("exec-1");
             verify(query).processInstanceId("pi-1");
@@ -241,7 +241,7 @@ class RuntimeQueryMcpToolsTest {
                     null, null, null, null, null, null, null, null
             );
 
-            tools.queryExecutions(dto);
+            tools.queryExecutions(dto, null);
 
             verify(query, never()).active();
             verify(query, never()).suspended();
@@ -257,7 +257,7 @@ class RuntimeQueryMcpToolsTest {
             when(exec.getTenantId()).thenReturn("t1");
             when(query.list()).thenReturn(List.of(exec));
 
-            List<ExecutionResultDto> result = tools.queryExecutions(empty(ExecutionQueryDto.class));
+            List<ExecutionResultDto> result = tools.queryExecutions(empty(ExecutionQueryDto.class), null);
 
             assertEquals(1, result.size());
             assertEquals("exec-1", result.getFirst().id());
@@ -286,7 +286,7 @@ class RuntimeQueryMcpToolsTest {
         void emptyDto_callsListWithNoFilters() {
             when(query.list()).thenReturn(Collections.emptyList());
 
-            List<IncidentResultDto> result = tools.queryIncidents(empty(IncidentQueryDto.class));
+            List<IncidentResultDto> result = tools.queryIncidents(empty(IncidentQueryDto.class), null);
 
             assertTrue(result.isEmpty());
             verify(query).list();
@@ -308,7 +308,7 @@ class RuntimeQueryMcpToolsTest {
                     List.of("t1"), List.of("jd-1", "jd-2")
             );
 
-            tools.queryIncidents(dto);
+            tools.queryIncidents(dto, null);
 
             verify(query).incidentId("inc-1");
             verify(query).incidentType("failedJob");
@@ -344,7 +344,7 @@ class RuntimeQueryMcpToolsTest {
             when(incident.getIncidentTimestamp()).thenReturn(timestamp);
             when(query.list()).thenReturn(List.of(incident));
 
-            List<IncidentResultDto> result = tools.queryIncidents(empty(IncidentQueryDto.class));
+            List<IncidentResultDto> result = tools.queryIncidents(empty(IncidentQueryDto.class), null);
 
             assertEquals(1, result.size());
             assertEquals("inc-1", result.getFirst().id());
@@ -373,7 +373,7 @@ class RuntimeQueryMcpToolsTest {
         void emptyDto_callsListWithNoFilters() {
             when(query.list()).thenReturn(Collections.emptyList());
 
-            List<EventSubscriptionResultDto> result = tools.queryEventSubscriptions(empty(EventSubscriptionQueryDto.class));
+            List<EventSubscriptionResultDto> result = tools.queryEventSubscriptions(empty(EventSubscriptionQueryDto.class), null);
 
             assertTrue(result.isEmpty());
             verify(query).list();
@@ -389,7 +389,7 @@ class RuntimeQueryMcpToolsTest {
                     List.of("t1", "t2"), true, true
             );
 
-            tools.queryEventSubscriptions(dto);
+            tools.queryEventSubscriptions(dto, null);
 
             verify(query).eventSubscriptionId("es-1");
             verify(query).eventName("myEvent");
@@ -416,7 +416,7 @@ class RuntimeQueryMcpToolsTest {
             when(es.getCreated()).thenReturn(created);
             when(query.list()).thenReturn(List.of(es));
 
-            List<EventSubscriptionResultDto> result = tools.queryEventSubscriptions(empty(EventSubscriptionQueryDto.class));
+            List<EventSubscriptionResultDto> result = tools.queryEventSubscriptions(empty(EventSubscriptionQueryDto.class), null);
 
             assertEquals(1, result.size());
             assertEquals("es-1", result.getFirst().id());
@@ -444,7 +444,7 @@ class RuntimeQueryMcpToolsTest {
         void emptyDto_callsListWithNoFilters_andDisablesBinaryFetching() {
             when(query.list()).thenReturn(Collections.emptyList());
 
-            List<VariableInstanceResultDto> result = tools.queryVariableInstances(empty(VariableInstanceQueryDto.class));
+            List<VariableInstanceResultDto> result = tools.queryVariableInstances(empty(VariableInstanceQueryDto.class), null);
 
             assertTrue(result.isEmpty());
             verify(query).disableBinaryFetching();
@@ -465,7 +465,7 @@ class RuntimeQueryMcpToolsTest {
                     true, true
             );
 
-            tools.queryVariableInstances(dto);
+            tools.queryVariableInstances(dto, null);
 
             verify(query).variableName("orderId");
             verify(query).variableNameLike("order%");
@@ -496,7 +496,7 @@ class RuntimeQueryMcpToolsTest {
                     null, null, null, null
             );
 
-            tools.queryVariableInstances(dto);
+            tools.queryVariableInstances(dto, null);
 
             verify(query, never()).processInstanceIdIn(any(String[].class));
             verify(query, never()).executionIdIn(any(String[].class));
@@ -516,7 +516,7 @@ class RuntimeQueryMcpToolsTest {
             when(var.getTenantId()).thenReturn("t1");
             when(query.list()).thenReturn(List.of(var));
 
-            List<VariableInstanceResultDto> result = tools.queryVariableInstances(empty(VariableInstanceQueryDto.class));
+            List<VariableInstanceResultDto> result = tools.queryVariableInstances(empty(VariableInstanceQueryDto.class), null);
 
             assertEquals(1, result.size());
             assertEquals("var-1", result.getFirst().id());
@@ -535,7 +535,7 @@ class RuntimeQueryMcpToolsTest {
             when(var.getTypeName()).thenReturn("bytes");
             when(query.list()).thenReturn(List.of(var));
 
-            List<VariableInstanceResultDto> result = tools.queryVariableInstances(empty(VariableInstanceQueryDto.class));
+            List<VariableInstanceResultDto> result = tools.queryVariableInstances(empty(VariableInstanceQueryDto.class), null);
 
             assertEquals(1, result.size());
             assertNull(result.getFirst().value());

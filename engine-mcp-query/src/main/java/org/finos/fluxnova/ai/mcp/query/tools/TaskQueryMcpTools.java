@@ -10,7 +10,7 @@ import org.springaicommunity.mcp.annotation.McpToolParam;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Value;
 
 /**
  * MCP tools for querying task data from the process engine.
@@ -24,9 +24,12 @@ public class TaskQueryMcpTools {
     private static final Logger LOG = LoggerFactory.getLogger(TaskQueryMcpTools.class);
 
     private final TaskService taskService;
+    private final int defaultMaxResults;
 
-    public TaskQueryMcpTools(TaskService taskService) {
+    public TaskQueryMcpTools(TaskService taskService,
+            @Value("${fluxnova.mcp.query.max-results:200}") int defaultMaxResults) {
         this.taskService = taskService;
+        this.defaultMaxResults = defaultMaxResults;
     }
 
     // ---- Task Query ----
@@ -38,12 +41,18 @@ public class TaskQueryMcpTools {
             + "Use this tool to find tasks assigned to or available for a specific user or group, "
             + "filter by process or case context, priority, due dates, follow-up dates, "
             + "delegation state, or other task attributes. All filter parameters are optional.")
-    public List<TaskResultDto> queryTasks(@McpToolParam TaskQueryDto queryDto) {
+    public List<TaskResultDto> queryTasks(
+            @McpToolParam TaskQueryDto queryDto,
+            @McpToolParam(description = "Maximum number of results to return. "
+                    + "If not specified, defaults to the configured maximum. "
+                    + "Cannot exceed the configured maximum.") Integer maxResults) {
         LOG.info("Querying tasks with criteria: {}", queryDto);
 
+        int limit = maxResults != null ? Math.min(maxResults, defaultMaxResults) : defaultMaxResults;
         List<TaskResultDto> resultDtos = queryDto.toQuery(taskService).list().stream()
+                .limit(limit)
                 .map(TaskResultDto::fromTask)
-                .collect(Collectors.toList());
+                .toList();
 
         LOG.info("Task query returned {} results", resultDtos.size());
         return resultDtos;

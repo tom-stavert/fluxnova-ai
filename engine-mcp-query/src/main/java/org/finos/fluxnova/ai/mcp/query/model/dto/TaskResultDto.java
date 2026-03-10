@@ -22,7 +22,7 @@ public record TaskResultDto(
         String description,
         String executionId,
         String parentTaskId,
-        int priority,
+        Integer priority,
         String processDefinitionId,
         String processInstanceId,
         String caseExecutionId,

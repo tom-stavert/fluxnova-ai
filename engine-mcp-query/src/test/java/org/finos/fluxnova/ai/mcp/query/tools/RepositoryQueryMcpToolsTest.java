@@ -46,7 +46,7 @@ class RepositoryQueryMcpToolsTest {
 
     @BeforeEach
     void setUp() {
-        tools = new RepositoryQueryMcpTools(repositoryService);
+        tools = new RepositoryQueryMcpTools(repositoryService, 200);
     }
 
     // ========================================================================
@@ -68,7 +68,7 @@ class RepositoryQueryMcpToolsTest {
         void emptyDto_callsListWithNoFilters() {
             when(query.list()).thenReturn(Collections.emptyList());
 
-            List<ProcessDefinitionResultDto> result = tools.queryProcessDefinitions(empty(ProcessDefinitionQueryDto.class));
+            List<ProcessDefinitionResultDto> result = tools.queryProcessDefinitions(empty(ProcessDefinitionQueryDto.class), null);
 
             assertTrue(result.isEmpty());
             verify(query).list();
@@ -98,7 +98,7 @@ class RepositoryQueryMcpToolsTest {
                     true, true
             );
 
-            tools.queryProcessDefinitions(dto);
+            tools.queryProcessDefinitions(dto, null);
 
             verify(query).processDefinitionId("def-1");
             verify(query).processDefinitionIdIn("def-1", "def-2");
@@ -149,7 +149,7 @@ class RepositoryQueryMcpToolsTest {
                     null, null
             );
 
-            tools.queryProcessDefinitions(dto);
+            tools.queryProcessDefinitions(dto, null);
 
             verify(query, never()).active();
             verify(query, never()).suspended();
@@ -178,7 +178,7 @@ class RepositoryQueryMcpToolsTest {
             when(pd.isStartableInTasklist()).thenReturn(true);
             when(query.list()).thenReturn(List.of(pd));
 
-            List<ProcessDefinitionResultDto> result = tools.queryProcessDefinitions(empty(ProcessDefinitionQueryDto.class));
+            List<ProcessDefinitionResultDto> result = tools.queryProcessDefinitions(empty(ProcessDefinitionQueryDto.class), null);
 
             assertEquals(1, result.size());
             ProcessDefinitionResultDto r = result.getFirst();
@@ -218,7 +218,7 @@ class RepositoryQueryMcpToolsTest {
         void emptyDto_callsListWithNoFilters() {
             when(query.list()).thenReturn(Collections.emptyList());
 
-            List<DeploymentResultDto> result = tools.queryDeployments(empty(DeploymentQueryDto.class));
+            List<DeploymentResultDto> result = tools.queryDeployments(empty(DeploymentQueryDto.class), null);
 
             assertTrue(result.isEmpty());
             verify(query).list();
@@ -238,7 +238,7 @@ class RepositoryQueryMcpToolsTest {
                     List.of("t1", "t2"), true, true
             );
 
-            tools.queryDeployments(dto);
+            tools.queryDeployments(dto, null);
 
             verify(query).deploymentId("deploy-1");
             verify(query).deploymentName("my-deployment");
@@ -260,7 +260,7 @@ class RepositoryQueryMcpToolsTest {
                     null, null, null, null, null
             );
 
-            tools.queryDeployments(dto);
+            tools.queryDeployments(dto, null);
 
             verify(query).deploymentSource(null);
         }
@@ -274,7 +274,7 @@ class RepositoryQueryMcpToolsTest {
                     null, null, Collections.emptyList(), false, null
             );
 
-            tools.queryDeployments(dto);
+            tools.queryDeployments(dto, null);
 
             verify(query, never()).withoutTenantId();
             verify(query, never()).deploymentSource(any());
@@ -292,7 +292,7 @@ class RepositoryQueryMcpToolsTest {
             when(dep.getTenantId()).thenReturn("t1");
             when(query.list()).thenReturn(List.of(dep));
 
-            List<DeploymentResultDto> result = tools.queryDeployments(empty(DeploymentQueryDto.class));
+            List<DeploymentResultDto> result = tools.queryDeployments(empty(DeploymentQueryDto.class), null);
 
             assertEquals(1, result.size());
             DeploymentResultDto r = result.getFirst();

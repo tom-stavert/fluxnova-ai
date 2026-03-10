@@ -10,7 +10,7 @@ import org.springaicommunity.mcp.annotation.McpToolParam;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Value;
 
 /**
  * MCP tools for querying repository data from the process engine.
@@ -24,9 +24,12 @@ public class RepositoryQueryMcpTools {
     private static final Logger LOG = LoggerFactory.getLogger(RepositoryQueryMcpTools.class);
 
     private final RepositoryService repositoryService;
+    private final int defaultMaxResults;
 
-    public RepositoryQueryMcpTools(RepositoryService repositoryService) {
+    public RepositoryQueryMcpTools(RepositoryService repositoryService,
+            @Value("${fluxnova.mcp.query.max-results:200}") int defaultMaxResults) {
         this.repositoryService = repositoryService;
+        this.defaultMaxResults = defaultMaxResults;
     }
 
     // ---- Process Definition Query ----
@@ -38,12 +41,18 @@ public class RepositoryQueryMcpTools {
             + "Use this tool to discover available workflows, find specific versions of a process, "
             + "or check which definitions are deployed, active, or suspended. "
             + "All filter parameters are optional.")
-    public List<ProcessDefinitionResultDto> queryProcessDefinitions(@McpToolParam ProcessDefinitionQueryDto queryDto) {
+    public List<ProcessDefinitionResultDto> queryProcessDefinitions(
+            @McpToolParam ProcessDefinitionQueryDto queryDto,
+            @McpToolParam(description = "Maximum number of results to return. "
+                    + "If not specified, defaults to the configured maximum. "
+                    + "Cannot exceed the configured maximum.") Integer maxResults) {
         LOG.info("Querying process definitions with criteria: {}", queryDto);
 
+        int limit = maxResults != null ? Math.min(maxResults, defaultMaxResults) : defaultMaxResults;
         List<ProcessDefinitionResultDto> resultDtos = queryDto.toQuery(repositoryService).list().stream()
+                .limit(limit)
                 .map(ProcessDefinitionResultDto::fromProcessDefinition)
-                .collect(Collectors.toList());
+                .toList();
 
         LOG.info("Process definition query returned {} results", resultDtos.size());
         return resultDtos;
@@ -58,12 +67,18 @@ public class RepositoryQueryMcpTools {
             + "Use this tool to find when and what was deployed, or to list deployments by "
             + "name, source, tenant, or date range. "
             + "All filter parameters are optional.")
-    public List<DeploymentResultDto> queryDeployments(@McpToolParam DeploymentQueryDto queryDto) {
+    public List<DeploymentResultDto> queryDeployments(
+            @McpToolParam DeploymentQueryDto queryDto,
+            @McpToolParam(description = "Maximum number of results to return. "
+                    + "If not specified, defaults to the configured maximum. "
+                    + "Cannot exceed the configured maximum.") Integer maxResults) {
         LOG.info("Querying deployments with criteria: {}", queryDto);
 
+        int limit = maxResults != null ? Math.min(maxResults, defaultMaxResults) : defaultMaxResults;
         List<DeploymentResultDto> resultDtos = queryDto.toQuery(repositoryService).list().stream()
+                .limit(limit)
                 .map(DeploymentResultDto::fromDeployment)
-                .collect(Collectors.toList());
+                .toList();
 
         LOG.info("Deployment query returned {} results", resultDtos.size());
         return resultDtos;

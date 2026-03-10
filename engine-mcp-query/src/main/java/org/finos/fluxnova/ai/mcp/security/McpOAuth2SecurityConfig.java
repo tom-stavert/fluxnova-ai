@@ -5,7 +5,6 @@ import org.finos.fluxnova.bpm.spring.boot.starter.security.oauth2.impl.Authorize
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.security.oauth2.client.ClientsConfiguredCondition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -38,7 +37,7 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
  * </ul>
  */
 @Configuration
-@Conditional(ClientsConfiguredCondition.class)
+@Conditional(OAuth2ClientsConfiguredCondition.class)
 public class McpOAuth2SecurityConfig {
 
     private static final Logger logger = LoggerFactory.getLogger(McpOAuth2SecurityConfig.class);

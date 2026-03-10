@@ -35,17 +35,17 @@ public record JobDefinitionResultDto(
         @Schema(description = "The id of the tenant this job definition belongs to.")
         String tenantId
 ) {
-    public static JobDefinitionResultDto fromJobDefinition(JobDefinition jd) {
+    public static JobDefinitionResultDto fromJobDefinition(JobDefinition jobDefinition) {
         return new JobDefinitionResultDto(
-                jd.getId(),
-                jd.getProcessDefinitionId(),
-                jd.getProcessDefinitionKey(),
-                jd.getJobType(),
-                jd.getJobConfiguration(),
-                jd.getActivityId(),
-                jd.isSuspended(),
-                jd.getOverridingJobPriority(),
-                jd.getTenantId()
+                jobDefinition.getId(),
+                jobDefinition.getProcessDefinitionId(),
+                jobDefinition.getProcessDefinitionKey(),
+                jobDefinition.getJobType(),
+                jobDefinition.getJobConfiguration(),
+                jobDefinition.getActivityId(),
+                jobDefinition.isSuspended(),
+                jobDefinition.getOverridingJobPriority(),
+                jobDefinition.getTenantId()
         );
     }
 }

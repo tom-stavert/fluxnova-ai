@@ -52,22 +52,22 @@ public record BatchResultDto(
         @Schema(description = "The date the batch execution started.")
         Date executionStartTime
 ) {
-    public static BatchResultDto fromBatch(Batch b) {
+    public static BatchResultDto fromBatch(Batch batch) {
         return new BatchResultDto(
-                b.getId(),
-                b.getType(),
-                b.getTotalJobs(),
-                b.getJobsCreated(),
-                b.getBatchJobsPerSeed(),
-                b.getInvocationsPerBatchJob(),
-                b.getSeedJobDefinitionId(),
-                b.getMonitorJobDefinitionId(),
-                b.getBatchJobDefinitionId(),
-                b.getTenantId(),
-                b.getCreateUserId(),
-                b.isSuspended(),
-                b.getStartTime(),
-                b.getExecutionStartTime()
+                batch.getId(),
+                batch.getType(),
+                batch.getTotalJobs(),
+                batch.getJobsCreated(),
+                batch.getBatchJobsPerSeed(),
+                batch.getInvocationsPerBatchJob(),
+                batch.getSeedJobDefinitionId(),
+                batch.getMonitorJobDefinitionId(),
+                batch.getBatchJobDefinitionId(),
+                batch.getTenantId(),
+                batch.getCreateUserId(),
+                batch.isSuspended(),
+                batch.getStartTime(),
+                batch.getExecutionStartTime()
         );
     }
 }

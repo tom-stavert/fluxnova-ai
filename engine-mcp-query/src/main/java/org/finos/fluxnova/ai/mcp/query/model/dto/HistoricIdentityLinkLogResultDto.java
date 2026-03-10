@@ -24,21 +24,21 @@ public record HistoricIdentityLinkLogResultDto(
         @Schema(description = "The id of the root process instance.") String rootProcessInstanceId,
         @Schema(description = "The time this historic identity link log entry will be removed.") Date removalTime
 ) {
-    public static HistoricIdentityLinkLogResultDto fromHistoricIdentityLinkLog(HistoricIdentityLinkLog hill) {
+    public static HistoricIdentityLinkLogResultDto fromHistoricIdentityLinkLog(HistoricIdentityLinkLog historicIdentityLinkLog) {
         return new HistoricIdentityLinkLogResultDto(
-                hill.getId(),
-                hill.getType(),
-                hill.getUserId(),
-                hill.getGroupId(),
-                hill.getTaskId(),
-                hill.getAssignerId(),
-                hill.getOperationType(),
-                hill.getTime(),
-                hill.getProcessDefinitionId(),
-                hill.getProcessDefinitionKey(),
-                hill.getTenantId(),
-                hill.getRootProcessInstanceId(),
-                hill.getRemovalTime()
+                historicIdentityLinkLog.getId(),
+                historicIdentityLinkLog.getType(),
+                historicIdentityLinkLog.getUserId(),
+                historicIdentityLinkLog.getGroupId(),
+                historicIdentityLinkLog.getTaskId(),
+                historicIdentityLinkLog.getAssignerId(),
+                historicIdentityLinkLog.getOperationType(),
+                historicIdentityLinkLog.getTime(),
+                historicIdentityLinkLog.getProcessDefinitionId(),
+                historicIdentityLinkLog.getProcessDefinitionKey(),
+                historicIdentityLinkLog.getTenantId(),
+                historicIdentityLinkLog.getRootProcessInstanceId(),
+                historicIdentityLinkLog.getRemovalTime()
         );
     }
 }

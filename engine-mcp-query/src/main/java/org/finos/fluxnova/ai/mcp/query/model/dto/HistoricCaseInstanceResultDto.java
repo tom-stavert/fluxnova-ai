@@ -27,24 +27,24 @@ public record HistoricCaseInstanceResultDto(
         @Schema(description = "Whether the case instance is terminated.") boolean terminated,
         @Schema(description = "Whether the case instance is closed.") boolean closed
 ) {
-    public static HistoricCaseInstanceResultDto fromHistoricCaseInstance(HistoricCaseInstance hci) {
+    public static HistoricCaseInstanceResultDto fromHistoricCaseInstance(HistoricCaseInstance historicCaseInstance) {
         return new HistoricCaseInstanceResultDto(
-                hci.getId(),
-                hci.getBusinessKey(),
-                hci.getCaseDefinitionId(),
-                hci.getCaseDefinitionKey(),
-                hci.getCaseDefinitionName(),
-                hci.getCreateTime(),
-                hci.getCloseTime(),
-                hci.getDurationInMillis(),
-                hci.getCreateUserId(),
-                hci.getSuperCaseInstanceId(),
-                hci.getSuperProcessInstanceId(),
-                hci.getTenantId(),
-                hci.isActive(),
-                hci.isCompleted(),
-                hci.isTerminated(),
-                hci.isClosed()
+                historicCaseInstance.getId(),
+                historicCaseInstance.getBusinessKey(),
+                historicCaseInstance.getCaseDefinitionId(),
+                historicCaseInstance.getCaseDefinitionKey(),
+                historicCaseInstance.getCaseDefinitionName(),
+                historicCaseInstance.getCreateTime(),
+                historicCaseInstance.getCloseTime(),
+                historicCaseInstance.getDurationInMillis(),
+                historicCaseInstance.getCreateUserId(),
+                historicCaseInstance.getSuperCaseInstanceId(),
+                historicCaseInstance.getSuperProcessInstanceId(),
+                historicCaseInstance.getTenantId(),
+                historicCaseInstance.isActive(),
+                historicCaseInstance.isCompleted(),
+                historicCaseInstance.isTerminated(),
+                historicCaseInstance.isClosed()
         );
     }
 }

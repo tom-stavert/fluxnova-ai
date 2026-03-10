@@ -32,29 +32,29 @@ public record HistoricExternalTaskLogResultDto(
         @Schema(description = "Whether this log entry records an external task deletion.") boolean deletionLog,
         @Schema(description = "The time this historic external task log entry will be removed.") Date removalTime
 ) {
-    public static HistoricExternalTaskLogResultDto fromHistoricExternalTaskLog(HistoricExternalTaskLog hetl) {
+    public static HistoricExternalTaskLogResultDto fromHistoricExternalTaskLog(HistoricExternalTaskLog historicExternalTaskLog) {
         return new HistoricExternalTaskLogResultDto(
-                hetl.getId(),
-                hetl.getTimestamp(),
-                hetl.getExternalTaskId(),
-                hetl.getRetries(),
-                hetl.getPriority(),
-                hetl.getTopicName(),
-                hetl.getWorkerId(),
-                hetl.getErrorMessage(),
-                hetl.getActivityId(),
-                hetl.getActivityInstanceId(),
-                hetl.getExecutionId(),
-                hetl.getRootProcessInstanceId(),
-                hetl.getProcessInstanceId(),
-                hetl.getProcessDefinitionId(),
-                hetl.getProcessDefinitionKey(),
-                hetl.getTenantId(),
-                hetl.isCreationLog(),
-                hetl.isFailureLog(),
-                hetl.isSuccessLog(),
-                hetl.isDeletionLog(),
-                hetl.getRemovalTime()
+                historicExternalTaskLog.getId(),
+                historicExternalTaskLog.getTimestamp(),
+                historicExternalTaskLog.getExternalTaskId(),
+                historicExternalTaskLog.getRetries(),
+                historicExternalTaskLog.getPriority(),
+                historicExternalTaskLog.getTopicName(),
+                historicExternalTaskLog.getWorkerId(),
+                historicExternalTaskLog.getErrorMessage(),
+                historicExternalTaskLog.getActivityId(),
+                historicExternalTaskLog.getActivityInstanceId(),
+                historicExternalTaskLog.getExecutionId(),
+                historicExternalTaskLog.getRootProcessInstanceId(),
+                historicExternalTaskLog.getProcessInstanceId(),
+                historicExternalTaskLog.getProcessDefinitionId(),
+                historicExternalTaskLog.getProcessDefinitionKey(),
+                historicExternalTaskLog.getTenantId(),
+                historicExternalTaskLog.isCreationLog(),
+                historicExternalTaskLog.isFailureLog(),
+                historicExternalTaskLog.isSuccessLog(),
+                historicExternalTaskLog.isDeletionLog(),
+                historicExternalTaskLog.getRemovalTime()
         );
     }
 }

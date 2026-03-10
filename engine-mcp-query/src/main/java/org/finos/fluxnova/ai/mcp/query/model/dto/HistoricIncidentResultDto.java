@@ -34,31 +34,31 @@ public record HistoricIncidentResultDto(
         @Schema(description = "The id of the activity where the failing action occurred.") String failedActivityId,
         @Schema(description = "An annotation added to this historic incident.") String annotation
 ) {
-    public static HistoricIncidentResultDto fromHistoricIncident(HistoricIncident hi) {
+    public static HistoricIncidentResultDto fromHistoricIncident(HistoricIncident historicIncident) {
         return new HistoricIncidentResultDto(
-                hi.getId(),
-                hi.getCreateTime(),
-                hi.getEndTime(),
-                hi.getIncidentType(),
-                hi.getIncidentMessage(),
-                hi.getExecutionId(),
-                hi.getActivityId(),
-                hi.getRootProcessInstanceId(),
-                hi.getProcessInstanceId(),
-                hi.getProcessDefinitionId(),
-                hi.getProcessDefinitionKey(),
-                hi.getCauseIncidentId(),
-                hi.getRootCauseIncidentId(),
-                hi.getConfiguration(),
-                hi.getHistoryConfiguration(),
-                hi.isOpen(),
-                hi.isDeleted(),
-                hi.isResolved(),
-                hi.getTenantId(),
-                hi.getJobDefinitionId(),
-                hi.getRemovalTime(),
-                hi.getFailedActivityId(),
-                hi.getAnnotation()
+                historicIncident.getId(),
+                historicIncident.getCreateTime(),
+                historicIncident.getEndTime(),
+                historicIncident.getIncidentType(),
+                historicIncident.getIncidentMessage(),
+                historicIncident.getExecutionId(),
+                historicIncident.getActivityId(),
+                historicIncident.getRootProcessInstanceId(),
+                historicIncident.getProcessInstanceId(),
+                historicIncident.getProcessDefinitionId(),
+                historicIncident.getProcessDefinitionKey(),
+                historicIncident.getCauseIncidentId(),
+                historicIncident.getRootCauseIncidentId(),
+                historicIncident.getConfiguration(),
+                historicIncident.getHistoryConfiguration(),
+                historicIncident.isOpen(),
+                historicIncident.isDeleted(),
+                historicIncident.isResolved(),
+                historicIncident.getTenantId(),
+                historicIncident.getJobDefinitionId(),
+                historicIncident.getRemovalTime(),
+                historicIncident.getFailedActivityId(),
+                historicIncident.getAnnotation()
         );
     }
 }

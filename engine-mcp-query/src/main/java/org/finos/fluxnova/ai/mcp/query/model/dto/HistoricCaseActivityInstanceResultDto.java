@@ -33,30 +33,30 @@ public record HistoricCaseActivityInstanceResultDto(
         @Schema(description = "Whether this case activity instance is completed.") boolean completed,
         @Schema(description = "Whether this case activity instance is terminated.") boolean terminated
 ) {
-    public static HistoricCaseActivityInstanceResultDto fromHistoricCaseActivityInstance(HistoricCaseActivityInstance hcai) {
+    public static HistoricCaseActivityInstanceResultDto fromHistoricCaseActivityInstance(HistoricCaseActivityInstance historicCaseActivityInstance) {
         return new HistoricCaseActivityInstanceResultDto(
-                hcai.getId(),
-                hcai.getParentCaseActivityInstanceId(),
-                hcai.getCaseActivityId(),
-                hcai.getCaseActivityName(),
-                hcai.getCaseActivityType(),
-                hcai.getCaseDefinitionId(),
-                hcai.getCaseInstanceId(),
-                hcai.getCaseExecutionId(),
-                hcai.getTaskId(),
-                hcai.getCalledProcessInstanceId(),
-                hcai.getCalledCaseInstanceId(),
-                hcai.getTenantId(),
-                hcai.getCreateTime(),
-                hcai.getEndTime(),
-                hcai.getDurationInMillis(),
-                hcai.isRequired(),
-                hcai.isAvailable(),
-                hcai.isEnabled(),
-                hcai.isDisabled(),
-                hcai.isActive(),
-                hcai.isCompleted(),
-                hcai.isTerminated()
+                historicCaseActivityInstance.getId(),
+                historicCaseActivityInstance.getParentCaseActivityInstanceId(),
+                historicCaseActivityInstance.getCaseActivityId(),
+                historicCaseActivityInstance.getCaseActivityName(),
+                historicCaseActivityInstance.getCaseActivityType(),
+                historicCaseActivityInstance.getCaseDefinitionId(),
+                historicCaseActivityInstance.getCaseInstanceId(),
+                historicCaseActivityInstance.getCaseExecutionId(),
+                historicCaseActivityInstance.getTaskId(),
+                historicCaseActivityInstance.getCalledProcessInstanceId(),
+                historicCaseActivityInstance.getCalledCaseInstanceId(),
+                historicCaseActivityInstance.getTenantId(),
+                historicCaseActivityInstance.getCreateTime(),
+                historicCaseActivityInstance.getEndTime(),
+                historicCaseActivityInstance.getDurationInMillis(),
+                historicCaseActivityInstance.isRequired(),
+                historicCaseActivityInstance.isAvailable(),
+                historicCaseActivityInstance.isEnabled(),
+                historicCaseActivityInstance.isDisabled(),
+                historicCaseActivityInstance.isActive(),
+                historicCaseActivityInstance.isCompleted(),
+                historicCaseActivityInstance.isTerminated()
         );
     }
 }

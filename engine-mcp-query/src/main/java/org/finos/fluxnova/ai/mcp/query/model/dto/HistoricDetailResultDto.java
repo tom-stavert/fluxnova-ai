@@ -28,24 +28,24 @@ public record HistoricDetailResultDto(
         @Schema(description = "The id of the user operation that caused this detail.") String userOperationId,
         @Schema(description = "The time this historic detail will be removed.") Date removalTime
 ) {
-    public static HistoricDetailResultDto fromHistoricDetail(HistoricDetail hd) {
+    public static HistoricDetailResultDto fromHistoricDetail(HistoricDetail historicDetail) {
         return new HistoricDetailResultDto(
-                hd.getId(),
-                hd.getProcessDefinitionKey(),
-                hd.getProcessDefinitionId(),
-                hd.getRootProcessInstanceId(),
-                hd.getProcessInstanceId(),
-                hd.getActivityInstanceId(),
-                hd.getExecutionId(),
-                hd.getCaseDefinitionKey(),
-                hd.getCaseDefinitionId(),
-                hd.getCaseInstanceId(),
-                hd.getCaseExecutionId(),
-                hd.getTaskId(),
-                hd.getTime(),
-                hd.getTenantId(),
-                hd.getUserOperationId(),
-                hd.getRemovalTime()
+                historicDetail.getId(),
+                historicDetail.getProcessDefinitionKey(),
+                historicDetail.getProcessDefinitionId(),
+                historicDetail.getRootProcessInstanceId(),
+                historicDetail.getProcessInstanceId(),
+                historicDetail.getActivityInstanceId(),
+                historicDetail.getExecutionId(),
+                historicDetail.getCaseDefinitionKey(),
+                historicDetail.getCaseDefinitionId(),
+                historicDetail.getCaseInstanceId(),
+                historicDetail.getCaseExecutionId(),
+                historicDetail.getTaskId(),
+                historicDetail.getTime(),
+                historicDetail.getTenantId(),
+                historicDetail.getUserOperationId(),
+                historicDetail.getRemovalTime()
         );
     }
 }

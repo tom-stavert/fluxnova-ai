@@ -35,17 +35,17 @@ public record CaseInstanceResultDto(
         @Schema(description = "The id of the tenant this case instance belongs to.")
         String tenantId
 ) {
-    public static CaseInstanceResultDto fromCaseInstance(CaseInstance c) {
+    public static CaseInstanceResultDto fromCaseInstance(CaseInstance caseInstance) {
         return new CaseInstanceResultDto(
-                c.getId(),
-                c.getCaseInstanceId(),
-                c.getCaseDefinitionId(),
-                c.getBusinessKey(),
-                c.getParentId(),
-                c.isActive(),
-                c.isCompleted(),
-                c.isTerminated(),
-                c.getTenantId()
+                caseInstance.getId(),
+                caseInstance.getCaseInstanceId(),
+                caseInstance.getCaseDefinitionId(),
+                caseInstance.getBusinessKey(),
+                caseInstance.getParentId(),
+                caseInstance.isActive(),
+                caseInstance.isCompleted(),
+                caseInstance.isTerminated(),
+                caseInstance.getTenantId()
         );
     }
 }

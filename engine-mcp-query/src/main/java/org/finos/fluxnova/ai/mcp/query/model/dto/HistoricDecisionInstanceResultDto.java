@@ -32,29 +32,29 @@ public record HistoricDecisionInstanceResultDto(
         @Schema(description = "The key of the decision requirements definition.") String decisionRequirementsDefinitionKey,
         @Schema(description = "The id of the tenant.") String tenantId
 ) {
-    public static HistoricDecisionInstanceResultDto fromHistoricDecisionInstance(HistoricDecisionInstance hdi) {
+    public static HistoricDecisionInstanceResultDto fromHistoricDecisionInstance(HistoricDecisionInstance historicDecisionInstance) {
         return new HistoricDecisionInstanceResultDto(
-                hdi.getId(),
-                hdi.getDecisionDefinitionId(),
-                hdi.getDecisionDefinitionKey(),
-                hdi.getDecisionDefinitionName(),
-                hdi.getEvaluationTime(),
-                hdi.getRemovalTime(),
-                hdi.getProcessDefinitionKey(),
-                hdi.getProcessDefinitionId(),
-                hdi.getProcessInstanceId(),
-                hdi.getCaseDefinitionKey(),
-                hdi.getCaseDefinitionId(),
-                hdi.getCaseInstanceId(),
-                hdi.getActivityId(),
-                hdi.getActivityInstanceId(),
-                hdi.getUserId(),
-                hdi.getCollectResultValue(),
-                hdi.getRootDecisionInstanceId(),
-                hdi.getRootProcessInstanceId(),
-                hdi.getDecisionRequirementsDefinitionId(),
-                hdi.getDecisionRequirementsDefinitionKey(),
-                hdi.getTenantId()
+                historicDecisionInstance.getId(),
+                historicDecisionInstance.getDecisionDefinitionId(),
+                historicDecisionInstance.getDecisionDefinitionKey(),
+                historicDecisionInstance.getDecisionDefinitionName(),
+                historicDecisionInstance.getEvaluationTime(),
+                historicDecisionInstance.getRemovalTime(),
+                historicDecisionInstance.getProcessDefinitionKey(),
+                historicDecisionInstance.getProcessDefinitionId(),
+                historicDecisionInstance.getProcessInstanceId(),
+                historicDecisionInstance.getCaseDefinitionKey(),
+                historicDecisionInstance.getCaseDefinitionId(),
+                historicDecisionInstance.getCaseInstanceId(),
+                historicDecisionInstance.getActivityId(),
+                historicDecisionInstance.getActivityInstanceId(),
+                historicDecisionInstance.getUserId(),
+                historicDecisionInstance.getCollectResultValue(),
+                historicDecisionInstance.getRootDecisionInstanceId(),
+                historicDecisionInstance.getRootProcessInstanceId(),
+                historicDecisionInstance.getDecisionRequirementsDefinitionId(),
+                historicDecisionInstance.getDecisionRequirementsDefinitionKey(),
+                historicDecisionInstance.getTenantId()
         );
     }
 }

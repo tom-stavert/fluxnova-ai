@@ -25,22 +25,22 @@ public record HistoricBatchResultDto(
         @Schema(description = "The time the batch ended.") Date endTime,
         @Schema(description = "The time this historic batch will be removed.") Date removalTime
 ) {
-    public static HistoricBatchResultDto fromHistoricBatch(HistoricBatch hb) {
+    public static HistoricBatchResultDto fromHistoricBatch(HistoricBatch historicBatch) {
         return new HistoricBatchResultDto(
-                hb.getId(),
-                hb.getType(),
-                hb.getTotalJobs(),
-                hb.getBatchJobsPerSeed(),
-                hb.getInvocationsPerBatchJob(),
-                hb.getSeedJobDefinitionId(),
-                hb.getMonitorJobDefinitionId(),
-                hb.getBatchJobDefinitionId(),
-                hb.getTenantId(),
-                hb.getCreateUserId(),
-                hb.getStartTime(),
-                hb.getExecutionStartTime(),
-                hb.getEndTime(),
-                hb.getRemovalTime()
+                historicBatch.getId(),
+                historicBatch.getType(),
+                historicBatch.getTotalJobs(),
+                historicBatch.getBatchJobsPerSeed(),
+                historicBatch.getInvocationsPerBatchJob(),
+                historicBatch.getSeedJobDefinitionId(),
+                historicBatch.getMonitorJobDefinitionId(),
+                historicBatch.getBatchJobDefinitionId(),
+                historicBatch.getTenantId(),
+                historicBatch.getCreateUserId(),
+                historicBatch.getStartTime(),
+                historicBatch.getExecutionStartTime(),
+                historicBatch.getEndTime(),
+                historicBatch.getRemovalTime()
         );
     }
 }

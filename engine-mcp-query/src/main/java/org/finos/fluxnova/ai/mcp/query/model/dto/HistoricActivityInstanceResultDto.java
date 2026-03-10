@@ -32,29 +32,29 @@ public record HistoricActivityInstanceResultDto(
         @Schema(description = "The id of the tenant this activity instance belongs to.") String tenantId,
         @Schema(description = "The time this historic activity instance will be removed.") Date removalTime
 ) {
-    public static HistoricActivityInstanceResultDto fromHistoricActivityInstance(HistoricActivityInstance hai) {
+    public static HistoricActivityInstanceResultDto fromHistoricActivityInstance(HistoricActivityInstance historicActivityInstance) {
         return new HistoricActivityInstanceResultDto(
-                hai.getId(),
-                hai.getParentActivityInstanceId(),
-                hai.getActivityId(),
-                hai.getActivityName(),
-                hai.getActivityType(),
-                hai.getProcessDefinitionKey(),
-                hai.getProcessDefinitionId(),
-                hai.getRootProcessInstanceId(),
-                hai.getProcessInstanceId(),
-                hai.getExecutionId(),
-                hai.getTaskId(),
-                hai.getCalledProcessInstanceId(),
-                hai.getCalledCaseInstanceId(),
-                hai.getAssignee(),
-                hai.getStartTime(),
-                hai.getEndTime(),
-                hai.getDurationInMillis(),
-                hai.isCompleteScope(),
-                hai.isCanceled(),
-                hai.getTenantId(),
-                hai.getRemovalTime()
+                historicActivityInstance.getId(),
+                historicActivityInstance.getParentActivityInstanceId(),
+                historicActivityInstance.getActivityId(),
+                historicActivityInstance.getActivityName(),
+                historicActivityInstance.getActivityType(),
+                historicActivityInstance.getProcessDefinitionKey(),
+                historicActivityInstance.getProcessDefinitionId(),
+                historicActivityInstance.getRootProcessInstanceId(),
+                historicActivityInstance.getProcessInstanceId(),
+                historicActivityInstance.getExecutionId(),
+                historicActivityInstance.getTaskId(),
+                historicActivityInstance.getCalledProcessInstanceId(),
+                historicActivityInstance.getCalledCaseInstanceId(),
+                historicActivityInstance.getAssignee(),
+                historicActivityInstance.getStartTime(),
+                historicActivityInstance.getEndTime(),
+                historicActivityInstance.getDurationInMillis(),
+                historicActivityInstance.isCompleteScope(),
+                historicActivityInstance.isCanceled(),
+                historicActivityInstance.getTenantId(),
+                historicActivityInstance.getRemovalTime()
         );
     }
 }

@@ -50,22 +50,22 @@ public record CaseExecutionResultDto(
         @Schema(description = "The id of the tenant this case execution belongs to.")
         String tenantId
 ) {
-    public static CaseExecutionResultDto fromCaseExecution(CaseExecution e) {
+    public static CaseExecutionResultDto fromCaseExecution(CaseExecution caseExecution) {
         return new CaseExecutionResultDto(
-                e.getId(),
-                e.getCaseInstanceId(),
-                e.getCaseDefinitionId(),
-                e.getActivityId(),
-                e.getActivityName(),
-                e.getActivityType(),
-                e.getParentId(),
-                e.isRequired(),
-                e.isAvailable(),
-                e.isActive(),
-                e.isEnabled(),
-                e.isDisabled(),
-                e.isTerminated(),
-                e.getTenantId()
+                caseExecution.getId(),
+                caseExecution.getCaseInstanceId(),
+                caseExecution.getCaseDefinitionId(),
+                caseExecution.getActivityId(),
+                caseExecution.getActivityName(),
+                caseExecution.getActivityType(),
+                caseExecution.getParentId(),
+                caseExecution.isRequired(),
+                caseExecution.isAvailable(),
+                caseExecution.isActive(),
+                caseExecution.isEnabled(),
+                caseExecution.isDisabled(),
+                caseExecution.isTerminated(),
+                caseExecution.getTenantId()
         );
     }
 }

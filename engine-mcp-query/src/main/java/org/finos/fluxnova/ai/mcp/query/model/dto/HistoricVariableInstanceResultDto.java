@@ -31,28 +31,28 @@ public record HistoricVariableInstanceResultDto(
         @Schema(description = "The time the variable was created.") Date createTime,
         @Schema(description = "The time this historic variable instance will be removed.") Date removalTime
 ) {
-    public static HistoricVariableInstanceResultDto fromHistoricVariableInstance(HistoricVariableInstance hvi) {
+    public static HistoricVariableInstanceResultDto fromHistoricVariableInstance(HistoricVariableInstance historicVariableInstance) {
         return new HistoricVariableInstanceResultDto(
-                hvi.getId(),
-                hvi.getName(),
-                hvi.getTypeName(),
-                hvi.getValue() != null ? String.valueOf(hvi.getValue()) : null,
-                hvi.getProcessDefinitionKey(),
-                hvi.getProcessDefinitionId(),
-                hvi.getRootProcessInstanceId(),
-                hvi.getProcessInstanceId(),
-                hvi.getExecutionId(),
-                hvi.getActivityInstanceId(),
-                hvi.getCaseDefinitionKey(),
-                hvi.getCaseDefinitionId(),
-                hvi.getCaseInstanceId(),
-                hvi.getCaseExecutionId(),
-                hvi.getTaskId(),
-                hvi.getErrorMessage(),
-                hvi.getTenantId(),
-                hvi.getState(),
-                hvi.getCreateTime(),
-                hvi.getRemovalTime()
+                historicVariableInstance.getId(),
+                historicVariableInstance.getName(),
+                historicVariableInstance.getTypeName(),
+                historicVariableInstance.getValue() != null ? String.valueOf(historicVariableInstance.getValue()) : null,
+                historicVariableInstance.getProcessDefinitionKey(),
+                historicVariableInstance.getProcessDefinitionId(),
+                historicVariableInstance.getRootProcessInstanceId(),
+                historicVariableInstance.getProcessInstanceId(),
+                historicVariableInstance.getExecutionId(),
+                historicVariableInstance.getActivityInstanceId(),
+                historicVariableInstance.getCaseDefinitionKey(),
+                historicVariableInstance.getCaseDefinitionId(),
+                historicVariableInstance.getCaseInstanceId(),
+                historicVariableInstance.getCaseExecutionId(),
+                historicVariableInstance.getTaskId(),
+                historicVariableInstance.getErrorMessage(),
+                historicVariableInstance.getTenantId(),
+                historicVariableInstance.getState(),
+                historicVariableInstance.getCreateTime(),
+                historicVariableInstance.getRemovalTime()
         );
     }
 }

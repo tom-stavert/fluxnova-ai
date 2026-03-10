@@ -19,11 +19,11 @@ public record SchemaLogEntryResultDto(
         @Schema(description = "The schema version of this log entry.")
         String version
 ) {
-    public static SchemaLogEntryResultDto fromSchemaLogEntry(SchemaLogEntry entry) {
+    public static SchemaLogEntryResultDto fromSchemaLogEntry(SchemaLogEntry schemaLogEntry) {
         return new SchemaLogEntryResultDto(
-                entry.getId(),
-                entry.getTimestamp(),
-                entry.getVersion()
+                schemaLogEntry.getId(),
+                schemaLogEntry.getTimestamp(),
+                schemaLogEntry.getVersion()
         );
     }
 }

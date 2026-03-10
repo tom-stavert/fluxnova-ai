@@ -31,27 +31,27 @@ public record HistoricProcessInstanceResultDto(
         @Schema(description = "The state of the historic process instance "
                 + "(ACTIVE, SUSPENDED, COMPLETED, EXTERNALLY_TERMINATED, INTERNALLY_TERMINATED).") String state
 ) {
-    public static HistoricProcessInstanceResultDto fromHistoricProcessInstance(HistoricProcessInstance hpi) {
+    public static HistoricProcessInstanceResultDto fromHistoricProcessInstance(HistoricProcessInstance historicProcessInstance) {
         return new HistoricProcessInstanceResultDto(
-                hpi.getId(),
-                hpi.getBusinessKey(),
-                hpi.getProcessDefinitionKey(),
-                hpi.getProcessDefinitionId(),
-                hpi.getProcessDefinitionName(),
-                hpi.getProcessDefinitionVersion(),
-                hpi.getStartTime(),
-                hpi.getEndTime(),
-                hpi.getRemovalTime(),
-                hpi.getDurationInMillis(),
-                hpi.getStartUserId(),
-                hpi.getStartActivityId(),
-                hpi.getDeleteReason(),
-                hpi.getSuperProcessInstanceId(),
-                hpi.getRootProcessInstanceId(),
-                hpi.getSuperCaseInstanceId(),
-                hpi.getCaseInstanceId(),
-                hpi.getTenantId(),
-                hpi.getState()
+                historicProcessInstance.getId(),
+                historicProcessInstance.getBusinessKey(),
+                historicProcessInstance.getProcessDefinitionKey(),
+                historicProcessInstance.getProcessDefinitionId(),
+                historicProcessInstance.getProcessDefinitionName(),
+                historicProcessInstance.getProcessDefinitionVersion(),
+                historicProcessInstance.getStartTime(),
+                historicProcessInstance.getEndTime(),
+                historicProcessInstance.getRemovalTime(),
+                historicProcessInstance.getDurationInMillis(),
+                historicProcessInstance.getStartUserId(),
+                historicProcessInstance.getStartActivityId(),
+                historicProcessInstance.getDeleteReason(),
+                historicProcessInstance.getSuperProcessInstanceId(),
+                historicProcessInstance.getRootProcessInstanceId(),
+                historicProcessInstance.getSuperCaseInstanceId(),
+                historicProcessInstance.getCaseInstanceId(),
+                historicProcessInstance.getTenantId(),
+                historicProcessInstance.getState()
         );
     }
 }

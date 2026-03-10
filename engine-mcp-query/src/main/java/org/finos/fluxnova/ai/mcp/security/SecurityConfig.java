@@ -50,9 +50,8 @@ public class SecurityConfig {
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http
-        // Scope this chain to MCP paths only — avoids conflict with
-        // FluxnovaSecurityConfiguration which handles /engine-rest/**
-        .securityMatcher("/sse", "/mcp/**")
+        // Scope this chain to MCP paths only
+        .securityMatcher("/mcp")
         .authorizeHttpRequests(auth -> auth
             .anyRequest().authenticated()
         )

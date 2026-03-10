@@ -33,11 +33,11 @@ The extension ships tool components covering three engine services:
 | ------------ | ------------------------------------------------------------------------------------------------------------------ |
 | `queryTasks` | Find user tasks by assignee, candidate group, process context, priority, due dates, delegation state, and more.    |
 
-All tools accept a single query DTO parameter with optional filter criteria and return results as JSON.
+Each tool accepts a query DTO with optional filter criteria and an optional `maxResults` parameter to control the number of results returned. Results are serialized to JSON.
 
 ## Requirements
 
-- Java 17+
+- Java 21+
 - Fluxnova BPM Engine 1.0.0+
 - Spring Boot 3.5+
 - Spring AI 1.1+
@@ -63,10 +63,24 @@ No additional configuration is required — the extension picks up the engine se
 1. **Auto-configuration** component-scans the extension's packages.
 2. **Tool components** (`RuntimeQueryMcpTools`, `RepositoryQueryMcpTools`, `TaskQueryMcpTools`) are Spring `@Component` classes that inject their respective engine service and expose `@McpTool`-annotated methods.
 3. Each tool method:
-   - Accepts a query DTO (e.g. `ProcessInstanceQueryDto`) describing the filter criteria.
+   - Accepts a query DTO (e.g. `ProcessInstanceQueryDto`) describing the filter criteria, and an optional `maxResults` parameter.
    - Builds a native engine query (`RuntimeService.createProcessInstanceQuery()`, etc.) by applying only the non-null filters from the DTO.
-   - Applies sorting and pagination.
+   - Applies a result limit: `maxResults` if provided (capped at the configured maximum), otherwise the configured default.
    - Maps the engine entity results into lightweight result DTOs and serializes them to JSON.
+
+## Configuration
+
+The extension supports the following application properties:
+
+| Property | Default | Description |
+| --- | --- | --- |
+| `fluxnova.mcp.query.max-results` | `200` | Maximum number of results any tool call can return. Individual tool calls may request fewer via the `maxResults` tool parameter, but this value acts as an absolute ceiling. |
+
+Example `application.properties`:
+
+```properties
+fluxnova.mcp.query.max-results=500
+```
 
 ## Usage Examples
 
@@ -78,25 +92,22 @@ No additional configuration is required — the extension picks up the engine se
 }
 ```
 
-### Query process instances by definition key with pagination
+### Query process instances by definition key
 
+Query DTO:
 ```json
 {
-  "processDefinitionKey": "invoice-approval",
-  "firstResult": 0,
-  "maxResults": 20,
-  "sortBy": "businessKey",
-  "sortOrder": "asc"
+  "processDefinitionKey": "invoice-approval"
 }
 ```
+
+Pass `maxResults` as a separate tool parameter (e.g. `10`) to limit how many results are returned.
 
 ### Find incidents for a specific process instance
 
 ```json
 {
-  "processInstanceId": "abc-123",
-  "sortBy": "incidentTimestamp",
-  "sortOrder": "desc"
+  "processInstanceId": "abc-123"
 }
 ```
 
@@ -163,7 +174,7 @@ src/main/java/org/finos/fluxnova/ai/mcp/query/
 - **Read-only** — No tool can start, modify, suspend, or delete any engine entity. Only query operations are exposed.
 - **No engine-rest dependency** — Queries use the engine's native Java Query API directly, avoiding coupling to the REST layer.
 - **Self-describing for LLMs** — Tool descriptions and `@Schema` annotations on query DTO fields are written to be meaningful to an LLM agent, sourced from the engine's Javadoc and OpenAPI specifications.
-- **Safe defaults** — Binary variable fetching is disabled by default in variable queries to avoid loading large blobs.
+- **Safe defaults** — Binary variable fetching is disabled by default in variable queries to avoid loading large blobs. All queries are subject to a configurable result cap (default: 200) to prevent unbounded data retrieval.
 
 ## Building
 

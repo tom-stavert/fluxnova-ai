@@ -39,6 +39,12 @@
         <artifactId>swagger-annotations-jakarta</artifactId>
         <version>${swagger.version}</version>
       </dependency>
+      <!-- Override Nimbus JOSE JWT version to resolve convergence -->
+      <dependency>
+        <groupId>com.nimbusds</groupId>
+        <artifactId>nimbus-jose-jwt</artifactId>
+        <version>9.37.4</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
   <dependencies>

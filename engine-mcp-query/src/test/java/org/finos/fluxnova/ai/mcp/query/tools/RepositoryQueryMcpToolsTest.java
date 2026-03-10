@@ -1,9 +1,15 @@
 package org.finos.fluxnova.ai.mcp.query.tools;
 
-import org.finos.fluxnova.ai.mcp.query.model.dto.*;
-import org.finos.fluxnova.ai.mcp.query.model.query.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.finos.fluxnova.ai.mcp.query.model.dto.DeploymentResultDto;
+import org.finos.fluxnova.ai.mcp.query.model.dto.ProcessDefinitionResultDto;
+import org.finos.fluxnova.ai.mcp.query.model.query.DeploymentQueryDto;
+import org.finos.fluxnova.ai.mcp.query.model.query.ProcessDefinitionQueryDto;
 import org.finos.fluxnova.bpm.engine.RepositoryService;
-import org.finos.fluxnova.bpm.engine.repository.*;
+import org.finos.fluxnova.bpm.engine.repository.Deployment;
+import org.finos.fluxnova.bpm.engine.repository.DeploymentQuery;
+import org.finos.fluxnova.bpm.engine.repository.ProcessDefinition;
+import org.finos.fluxnova.bpm.engine.repository.ProcessDefinitionQuery;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -12,13 +18,26 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class RepositoryQueryMcpToolsTest {
+
+    private static final ObjectMapper MAPPER = new ObjectMapper();
+
+    private static <T> T empty(Class<T> type) {
+        try {
+            return MAPPER.readValue("{}", type);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @Mock
     private RepositoryService repositoryService;
@@ -49,7 +68,7 @@ class RepositoryQueryMcpToolsTest {
         void emptyDto_callsListWithNoFilters() {
             when(query.list()).thenReturn(Collections.emptyList());
 
-            List<ProcessDefinitionResultDto> result = tools.queryProcessDefinitions(new ProcessDefinitionQueryDto());
+            List<ProcessDefinitionResultDto> result = tools.queryProcessDefinitions(empty(ProcessDefinitionQueryDto.class));
 
             assertTrue(result.isEmpty());
             verify(query).list();
@@ -63,38 +82,21 @@ class RepositoryQueryMcpToolsTest {
             Date deployedAfter = new Date();
             Date deployedAt = new Date();
 
-            ProcessDefinitionQueryDto dto = new ProcessDefinitionQueryDto();
-            dto.setProcessDefinitionId("def-1");
-            dto.setProcessDefinitionIdIn(List.of("def-1", "def-2"));
-            dto.setCategory("billing");
-            dto.setCategoryLike("bill%");
-            dto.setName("Invoice Process");
-            dto.setNameLike("Invoice%");
-            dto.setDeploymentId("deploy-1");
-            dto.setDeployedAfter(deployedAfter);
-            dto.setDeployedAt(deployedAt);
-            dto.setKey("invoiceProcess");
-            dto.setKeysIn(List.of("invoiceProcess", "orderProcess"));
-            dto.setKeyLike("invoice%");
-            dto.setVersion(2);
-            dto.setLatestVersion(true);
-            dto.setResourceName("invoice.bpmn");
-            dto.setResourceNameLike("%.bpmn");
-            dto.setStartableBy("john");
-            dto.setActive(true);
-            dto.setSuspended(true);
-            dto.setIncidentId("inc-1");
-            dto.setIncidentType("failedJob");
-            dto.setIncidentMessage("Error");
-            dto.setIncidentMessageLike("%error%");
-            dto.setTenantIdIn(List.of("t1", "t2"));
-            dto.setWithoutTenantId(true);
-            dto.setIncludeProcessDefinitionsWithoutTenantId(true);
-            dto.setVersionTag("v1.0");
-            dto.setVersionTagLike("v1%");
-            dto.setWithoutVersionTag(true);
-            dto.setStartableInTasklist(true);
-            dto.setNotStartableInTasklist(true);
+            ProcessDefinitionQueryDto dto = new ProcessDefinitionQueryDto(
+                    "def-1", List.of("def-1", "def-2"),
+                    "billing", "bill%",
+                    "Invoice Process", "Invoice%",
+                    "deploy-1", deployedAfter, deployedAt,
+                    "invoiceProcess", "invoice%",
+                    2, true,
+                    "invoice.bpmn", "%.bpmn",
+                    "john",
+                    true, true,
+                    "inc-1", "failedJob", "Error", "%error%",
+                    List.of("t1", "t2"), true, true,
+                    "v1.0", "v1%", true,
+                    true, true
+            );
 
             tools.queryProcessDefinitions(dto);
 
@@ -108,7 +110,6 @@ class RepositoryQueryMcpToolsTest {
             verify(query).deployedAfter(deployedAfter);
             verify(query).deployedAt(deployedAt);
             verify(query).processDefinitionKey("invoiceProcess");
-            verify(query).processDefinitionKeysIn("invoiceProcess", "orderProcess");
             verify(query).processDefinitionKeyLike("invoice%");
             verify(query).processDefinitionVersion(2);
             verify(query).latestVersion();
@@ -135,14 +136,18 @@ class RepositoryQueryMcpToolsTest {
         void booleanFalseAndNull_notApplied() {
             when(query.list()).thenReturn(Collections.emptyList());
 
-            ProcessDefinitionQueryDto dto = new ProcessDefinitionQueryDto();
-            dto.setActive(false);
-            dto.setSuspended(null);
-            dto.setLatestVersion(false);
-            dto.setWithoutTenantId(null);
-            dto.setTenantIdIn(Collections.emptyList());
-            dto.setProcessDefinitionIdIn(Collections.emptyList());
-            dto.setKeysIn(Collections.emptyList());
+            ProcessDefinitionQueryDto dto = new ProcessDefinitionQueryDto(
+                    null, Collections.emptyList(),
+                    null, null, null, null, null, null, null,
+                    null, null,
+                    null, false,
+                    null, null, null,
+                    false, null,
+                    null, null, null, null,
+                    Collections.emptyList(), null, null,
+                    null, null, null,
+                    null, null
+            );
 
             tools.queryProcessDefinitions(dto);
 
@@ -152,7 +157,6 @@ class RepositoryQueryMcpToolsTest {
             verify(query, never()).withoutTenantId();
             verify(query, never()).tenantIdIn(any(String[].class));
             verify(query, never()).processDefinitionIdIn(any(String[].class));
-            verify(query, never()).processDefinitionKeysIn(any(String[].class));
         }
 
         @Test
@@ -174,24 +178,24 @@ class RepositoryQueryMcpToolsTest {
             when(pd.isStartableInTasklist()).thenReturn(true);
             when(query.list()).thenReturn(List.of(pd));
 
-            List<ProcessDefinitionResultDto> result = tools.queryProcessDefinitions(new ProcessDefinitionQueryDto());
+            List<ProcessDefinitionResultDto> result = tools.queryProcessDefinitions(empty(ProcessDefinitionQueryDto.class));
 
             assertEquals(1, result.size());
-            ProcessDefinitionResultDto r = result.get(0);
-            assertEquals("def:1:abc", r.getId());
-            assertEquals("invoiceProcess", r.getKey());
-            assertEquals("billing", r.getCategory());
-            assertEquals("Handles invoices", r.getDescription());
-            assertEquals("Invoice Process", r.getName());
-            assertEquals(3, r.getVersion());
-            assertEquals("invoice.bpmn", r.getResourceName());
-            assertEquals("deploy-1", r.getDeploymentId());
-            assertEquals("invoice.png", r.getDiagramResourceName());
-            assertTrue(r.isSuspended());
-            assertEquals("t1", r.getTenantId());
-            assertEquals("v1.0", r.getVersionTag());
-            assertEquals(180, r.getHistoryTimeToLive());
-            assertTrue(r.isStartableInTasklist());
+            ProcessDefinitionResultDto r = result.getFirst();
+            assertEquals("def:1:abc", r.id());
+            assertEquals("invoiceProcess", r.key());
+            assertEquals("billing", r.category());
+            assertEquals("Handles invoices", r.description());
+            assertEquals("Invoice Process", r.name());
+            assertEquals(3, r.version());
+            assertEquals("invoice.bpmn", r.resourceName());
+            assertEquals("deploy-1", r.deploymentId());
+            assertEquals("invoice.png", r.diagramResourceName());
+            assertTrue(r.suspended());
+            assertEquals("t1", r.tenantId());
+            assertEquals("v1.0", r.versionTag());
+            assertEquals(180, r.historyTimeToLive());
+            assertTrue(r.startableInTasklist());
         }
     }
 
@@ -214,7 +218,7 @@ class RepositoryQueryMcpToolsTest {
         void emptyDto_callsListWithNoFilters() {
             when(query.list()).thenReturn(Collections.emptyList());
 
-            List<DeploymentResultDto> result = tools.queryDeployments(new DeploymentQueryDto());
+            List<DeploymentResultDto> result = tools.queryDeployments(empty(DeploymentQueryDto.class));
 
             assertTrue(result.isEmpty());
             verify(query).list();
@@ -227,16 +231,12 @@ class RepositoryQueryMcpToolsTest {
             Date after = new Date();
             Date before = new Date();
 
-            DeploymentQueryDto dto = new DeploymentQueryDto();
-            dto.setDeploymentId("deploy-1");
-            dto.setName("my-deployment");
-            dto.setNameLike("my-%");
-            dto.setSource("process-application");
-            dto.setAfter(after);
-            dto.setBefore(before);
-            dto.setTenantIdIn(List.of("t1", "t2"));
-            dto.setWithoutTenantId(true);
-            dto.setIncludeDeploymentsWithoutTenantId(true);
+            DeploymentQueryDto dto = new DeploymentQueryDto(
+                    "deploy-1", "my-deployment", "my-%",
+                    "process-application", null,
+                    after, before,
+                    List.of("t1", "t2"), true, true
+            );
 
             tools.queryDeployments(dto);
 
@@ -255,8 +255,10 @@ class RepositoryQueryMcpToolsTest {
         void withoutSource_passesNullToDeploymentSource() {
             when(query.list()).thenReturn(Collections.emptyList());
 
-            DeploymentQueryDto dto = new DeploymentQueryDto();
-            dto.setWithoutSource(true);
+            DeploymentQueryDto dto = new DeploymentQueryDto(
+                    null, null, null, null, true,
+                    null, null, null, null, null
+            );
 
             tools.queryDeployments(dto);
 
@@ -267,10 +269,10 @@ class RepositoryQueryMcpToolsTest {
         void booleanFalseAndNull_notApplied() {
             when(query.list()).thenReturn(Collections.emptyList());
 
-            DeploymentQueryDto dto = new DeploymentQueryDto();
-            dto.setWithoutTenantId(false);
-            dto.setWithoutSource(null);
-            dto.setTenantIdIn(Collections.emptyList());
+            DeploymentQueryDto dto = new DeploymentQueryDto(
+                    null, null, null, null, null,
+                    null, null, Collections.emptyList(), false, null
+            );
 
             tools.queryDeployments(dto);
 
@@ -290,15 +292,15 @@ class RepositoryQueryMcpToolsTest {
             when(dep.getTenantId()).thenReturn("t1");
             when(query.list()).thenReturn(List.of(dep));
 
-            List<DeploymentResultDto> result = tools.queryDeployments(new DeploymentQueryDto());
+            List<DeploymentResultDto> result = tools.queryDeployments(empty(DeploymentQueryDto.class));
 
             assertEquals(1, result.size());
-            DeploymentResultDto r = result.get(0);
-            assertEquals("deploy-1", r.getId());
-            assertEquals("my-deployment", r.getName());
-            assertEquals(deployTime, r.getDeploymentTime());
-            assertEquals("process-application", r.getSource());
-            assertEquals("t1", r.getTenantId());
+            DeploymentResultDto r = result.getFirst();
+            assertEquals("deploy-1", r.id());
+            assertEquals("my-deployment", r.name());
+            assertEquals(deployTime, r.deploymentTime());
+            assertEquals("process-application", r.source());
+            assertEquals("t1", r.tenantId());
         }
     }
 }

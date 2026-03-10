@@ -1,9 +1,12 @@
 package org.finos.fluxnova.ai.mcp.query.tools;
 
-import org.finos.fluxnova.ai.mcp.query.model.dto.*;
-import org.finos.fluxnova.ai.mcp.query.model.query.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.finos.fluxnova.ai.mcp.query.model.dto.TaskResultDto;
+import org.finos.fluxnova.ai.mcp.query.model.query.TaskQueryDto;
 import org.finos.fluxnova.bpm.engine.TaskService;
-import org.finos.fluxnova.bpm.engine.task.*;
+import org.finos.fluxnova.bpm.engine.task.DelegationState;
+import org.finos.fluxnova.bpm.engine.task.Task;
+import org.finos.fluxnova.bpm.engine.task.TaskQuery;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -12,13 +15,25 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class TaskQueryMcpToolsTest {
+
+    private static final ObjectMapper MAPPER = new ObjectMapper();
+
+    private static TaskQueryDto emptyDto() {
+        try {
+            return MAPPER.readValue("{}", TaskQueryDto.class);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @Mock
     private TaskService taskService;
@@ -49,7 +64,7 @@ class TaskQueryMcpToolsTest {
         void emptyDto_callsListWithNoFilters() {
             when(query.list()).thenReturn(Collections.emptyList());
 
-            List<TaskResultDto> result = tools.queryTasks(new TaskQueryDto());
+            List<TaskResultDto> result = tools.queryTasks(emptyDto());
 
             assertTrue(result.isEmpty());
             verify(query).list();
@@ -61,39 +76,35 @@ class TaskQueryMcpToolsTest {
         void stringFiltersApplied() {
             when(query.list()).thenReturn(Collections.emptyList());
 
-            TaskQueryDto dto = new TaskQueryDto();
-            dto.setTaskId("task-1");
-            dto.setProcessInstanceId("pi-1");
-            dto.setProcessInstanceBusinessKey("order-123");
-            dto.setProcessInstanceBusinessKeyLike("order-%");
-            dto.setProcessDefinitionId("def-1");
-            dto.setProcessDefinitionKey("invoiceProcess");
-            dto.setProcessDefinitionName("Invoice Process");
-            dto.setProcessDefinitionNameLike("Invoice%");
-            dto.setExecutionId("exec-1");
-            dto.setAssignee("john");
-            dto.setAssigneeLike("jo%");
-            dto.setOwner("jane");
-            dto.setCandidateGroup("managers");
-            dto.setCandidateUser("john");
-            dto.setInvolvedUser("john");
-            dto.setTaskDefinitionKey("approveInvoice");
-            dto.setTaskDefinitionKeyLike("approve%");
-            dto.setName("Approve Invoice");
-            dto.setNameNotEqual("Reject Invoice");
-            dto.setNameLike("Approve%");
-            dto.setNameNotLike("Reject%");
-            dto.setDescription("Please approve");
-            dto.setDescriptionLike("approve%");
-            dto.setParentTaskId("parent-1");
-            dto.setCaseInstanceId("case-1");
-            dto.setCaseInstanceBusinessKey("case-bk-1");
-            dto.setCaseInstanceBusinessKeyLike("case-%");
-            dto.setCaseDefinitionId("caseDef-1");
-            dto.setCaseDefinitionKey("myCaseDef");
-            dto.setCaseDefinitionName("My Case");
-            dto.setCaseDefinitionNameLike("My%");
-            dto.setCaseExecutionId("caseExec-1");
+            TaskQueryDto dto = new TaskQueryDto(
+                    "task-1", null,
+                    "pi-1", null,
+                    "order-123", null, "order-%",
+                    "def-1", "invoiceProcess", null,
+                    "Invoice Process", "Invoice%",
+                    "exec-1",
+                    "john", "jo%", null,
+                    "jane",
+                    "managers", "john", null,
+                    "john",
+                    null, null,
+                    "approveInvoice", null, "approve%",
+                    "Approve Invoice", "Reject Invoice", "Approve%", "Reject%",
+                    "Please approve", "approve%",
+                    null, null, null,
+                    null, null, null, null,
+                    null, null, null, null,
+                    null, null, null, null,
+                    null,
+                    null, null, null, null,
+                    null, null,
+                    null, null,
+                    "parent-1",
+                    "case-1", "case-bk-1", "case-%",
+                    "caseDef-1", "myCaseDef", "My Case", "My%",
+                    "caseExec-1",
+                    null
+            );
 
             tools.queryTasks(dto);
 
@@ -135,15 +146,32 @@ class TaskQueryMcpToolsTest {
         void listFiltersApplied() {
             when(query.list()).thenReturn(Collections.emptyList());
 
-            TaskQueryDto dto = new TaskQueryDto();
-            dto.setTaskIdIn(List.of("t1", "t2"));
-            dto.setProcessInstanceIdIn(List.of("pi-1", "pi-2"));
-            dto.setProcessInstanceBusinessKeyIn(List.of("bk-1", "bk-2"));
-            dto.setProcessDefinitionKeyIn(List.of("proc1", "proc2"));
-            dto.setAssigneeIn(List.of("john", "jane"));
-            dto.setCandidateGroups(List.of("managers", "admins"));
-            dto.setTaskDefinitionKeyIn(List.of("approve", "review"));
-            dto.setTenantIdIn(List.of("t1", "t2"));
+            TaskQueryDto dto = new TaskQueryDto(
+                    null, List.of("t1", "t2"),
+                    null, List.of("pi-1", "pi-2"),
+                    null, List.of("bk-1", "bk-2"), null,
+                    null, null, List.of("proc1", "proc2"),
+                    null, null, null,
+                    null, null, List.of("john", "jane"),
+                    null, null, null, List.of("managers", "admins"),
+                    null, null, null,
+                    null, List.of("approve", "review"), null,
+                    null, null, null, null,
+                    null, null,
+                    null, null, null,
+                    null, null, null, null,
+                    null, null, null, null,
+                    null, null, null, null,
+                    null,
+                    null, null, null, null,
+                    null, null,
+                    List.of("t1", "t2"), null,
+                    null,
+                    null, null, null,
+                    null, null, null, null,
+                    null,
+                    null
+            );
 
             tools.queryTasks(dto);
 
@@ -172,21 +200,24 @@ class TaskQueryMcpToolsTest {
             Date createdBefore = new Date();
             Date updatedAfter = new Date();
 
-            TaskQueryDto dto = new TaskQueryDto();
-            dto.setPriority(5);
-            dto.setMaxPriority(10);
-            dto.setMinPriority(1);
-            dto.setDueDate(dueDate);
-            dto.setDueAfter(dueAfter);
-            dto.setDueBefore(dueBefore);
-            dto.setFollowUpDate(followUpDate);
-            dto.setFollowUpAfter(followUpAfter);
-            dto.setFollowUpBefore(followUpBefore);
-            dto.setFollowUpBeforeOrNotExistent(followUpBeforeOrNotExistent);
-            dto.setCreatedOn(createdOn);
-            dto.setCreatedAfter(createdAfter);
-            dto.setCreatedBefore(createdBefore);
-            dto.setUpdatedAfter(updatedAfter);
+            TaskQueryDto dto = new TaskQueryDto(
+                    null, null, null, null, null, null, null,
+                    null, null, null, null, null, null,
+                    null, null, null, null, null, null, null, null,
+                    null, null, null, null, null,
+                    null, null, null, null, null, null,
+                    5, 10, 1,
+                    dueDate, dueAfter, dueBefore, null,
+                    followUpDate, followUpAfter, followUpBefore, followUpBeforeOrNotExistent,
+                    createdOn, createdAfter, createdBefore, updatedAfter,
+                    null,
+                    null, null, null, null,
+                    null, null,
+                    null, null, null,
+                    null, null, null, null, null, null, null,
+                    null,
+                    null
+            );
 
             tools.queryTasks(dto);
 
@@ -210,18 +241,26 @@ class TaskQueryMcpToolsTest {
         void booleanFiltersApplied() {
             when(query.list()).thenReturn(Collections.emptyList());
 
-            TaskQueryDto dto = new TaskQueryDto();
-            dto.setAssigned(true);
-            dto.setUnassigned(true);
-            dto.setWithoutDueDate(true);
-            dto.setWithCandidateGroups(true);
-            dto.setWithoutCandidateGroups(true);
-            dto.setWithCandidateUsers(true);
-            dto.setWithoutCandidateUsers(true);
-            dto.setActive(true);
-            dto.setSuspended(true);
-            dto.setWithoutTenantId(true);
-            dto.setExcludeSubtasks(true);
+            TaskQueryDto dto = new TaskQueryDto(
+                    null, null, null, null, null, null, null,
+                    null, null, null, null, null, null,
+                    null, null, null, null, null, null, null, null,
+                    true, true,
+                    null, null, null,
+                    null, null, null, null, null, null,
+                    null, null, null,
+                    null, null, null, true,
+                    null, null, null, null,
+                    null, null, null, null,
+                    null,
+                    true, true, true, true,
+                    true, true,
+                    null, true,
+                    null,
+                    null, null, null, null, null, null, null,
+                    null,
+                    true
+            );
 
             tools.queryTasks(dto);
 
@@ -242,8 +281,24 @@ class TaskQueryMcpToolsTest {
         void delegationStateFilter() {
             when(query.list()).thenReturn(Collections.emptyList());
 
-            TaskQueryDto dto = new TaskQueryDto();
-            dto.setDelegationState("PENDING");
+            TaskQueryDto dto = new TaskQueryDto(
+                    null, null, null, null, null, null, null,
+                    null, null, null, null, null, null,
+                    null, null, null, null, null, null, null, null,
+                    null, null, null, null, null,
+                    null, null, null, null, null, null,
+                    null, null, null,
+                    null, null, null, null,
+                    null, null, null, null,
+                    null, null, null, null,
+                    "PENDING",
+                    null, null, null, null,
+                    null, null,
+                    null, null, null,
+                    null, null, null, null, null, null, null,
+                    null,
+                    null
+            );
 
             tools.queryTasks(dto);
 
@@ -254,16 +309,28 @@ class TaskQueryMcpToolsTest {
         void booleanFalseAndNull_notApplied() {
             when(query.list()).thenReturn(Collections.emptyList());
 
-            TaskQueryDto dto = new TaskQueryDto();
-            dto.setActive(false);
-            dto.setSuspended(null);
-            dto.setAssigned(false);
-            dto.setUnassigned(null);
-            dto.setWithoutDueDate(false);
-            dto.setExcludeSubtasks(null);
-            dto.setTenantIdIn(Collections.emptyList());
-            dto.setTaskIdIn(Collections.emptyList());
-            dto.setProcessInstanceIdIn(Collections.emptyList());
+            TaskQueryDto dto = new TaskQueryDto(
+                    null, Collections.emptyList(),
+                    null, Collections.emptyList(),
+                    null, null, null,
+                    null, null, null, null, null, null,
+                    null, null, null, null, null, null, null, null,
+                    false, null,
+                    null, null, null,
+                    null, null, null, null, null, null,
+                    null, null, null,
+                    null, null, null, false,
+                    null, null, null, null,
+                    null, null, null, null,
+                    null,
+                    null, null, null, null,
+                    false, null,
+                    Collections.emptyList(), null,
+                    null,
+                    null, null, null, null, null, null, null,
+                    null,
+                    null
+            );
 
             tools.queryTasks(dto);
 
@@ -310,33 +377,33 @@ class TaskQueryMcpToolsTest {
             when(task.getTaskState()).thenReturn("Created");
             when(query.list()).thenReturn(List.of(task));
 
-            List<TaskResultDto> result = tools.queryTasks(new TaskQueryDto());
+            List<TaskResultDto> result = tools.queryTasks(emptyDto());
 
             assertEquals(1, result.size());
-            TaskResultDto r = result.get(0);
-            assertEquals("task-1", r.getId());
-            assertEquals("Approve Invoice", r.getName());
-            assertEquals("john", r.getAssignee());
-            assertEquals("jane", r.getOwner());
-            assertEquals(created, r.getCreated());
-            assertEquals(lastUpdated, r.getLastUpdated());
-            assertEquals(due, r.getDue());
-            assertEquals(followUp, r.getFollowUp());
-            assertEquals("PENDING", r.getDelegationState());
-            assertEquals("Please approve this invoice", r.getDescription());
-            assertEquals("exec-1", r.getExecutionId());
-            assertEquals("parent-1", r.getParentTaskId());
-            assertEquals(50, r.getPriority());
-            assertEquals("def:1:abc", r.getProcessDefinitionId());
-            assertEquals("pi-1", r.getProcessInstanceId());
-            assertEquals("caseExec-1", r.getCaseExecutionId());
-            assertEquals("caseDef-1", r.getCaseDefinitionId());
-            assertEquals("case-1", r.getCaseInstanceId());
-            assertEquals("approveInvoice", r.getTaskDefinitionKey());
-            assertFalse(r.isSuspended());
-            assertEquals("embedded:app:approve-form.html", r.getFormKey());
-            assertEquals("t1", r.getTenantId());
-            assertEquals("Created", r.getTaskState());
+            TaskResultDto r = result.getFirst();
+            assertEquals("task-1", r.id());
+            assertEquals("Approve Invoice", r.name());
+            assertEquals("john", r.assignee());
+            assertEquals("jane", r.owner());
+            assertEquals(created, r.created());
+            assertEquals(lastUpdated, r.lastUpdated());
+            assertEquals(due, r.due());
+            assertEquals(followUp, r.followUp());
+            assertEquals("PENDING", r.delegationState());
+            assertEquals("Please approve this invoice", r.description());
+            assertEquals("exec-1", r.executionId());
+            assertEquals("parent-1", r.parentTaskId());
+            assertEquals(50, r.priority());
+            assertEquals("def:1:abc", r.processDefinitionId());
+            assertEquals("pi-1", r.processInstanceId());
+            assertEquals("caseExec-1", r.caseExecutionId());
+            assertEquals("caseDef-1", r.caseDefinitionId());
+            assertEquals("case-1", r.caseInstanceId());
+            assertEquals("approveInvoice", r.taskDefinitionKey());
+            assertFalse(r.suspended());
+            assertEquals("embedded:app:approve-form.html", r.formKey());
+            assertEquals("t1", r.tenantId());
+            assertEquals("Created", r.taskState());
         }
 
         @Test
@@ -346,10 +413,10 @@ class TaskQueryMcpToolsTest {
             when(task.getDelegationState()).thenReturn(null);
             when(query.list()).thenReturn(List.of(task));
 
-            List<TaskResultDto> result = tools.queryTasks(new TaskQueryDto());
+            List<TaskResultDto> result = tools.queryTasks(emptyDto());
 
             assertEquals(1, result.size());
-            assertNull(result.get(0).getDelegationState());
+            assertNull(result.getFirst().delegationState());
         }
     }
 }

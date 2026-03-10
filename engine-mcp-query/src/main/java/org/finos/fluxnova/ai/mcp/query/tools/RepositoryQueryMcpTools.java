@@ -83,4 +83,81 @@ public class RepositoryQueryMcpTools {
         LOG.info("Deployment query returned {} results", resultDtos.size());
         return resultDtos;
     }
+
+    // ---- Case Definition Query ----
+
+    @McpTool(description = "Query case definitions in the process engine. "
+            + "Returns a list of case definitions matching the given filter criteria. "
+            + "A case definition is a deployed CMMN 2.0 case template that represents a plan of work "
+            + "for a case instance. "
+            + "Use this tool to discover available case templates, find specific versions, "
+            + "or check which definitions are deployed. "
+            + "All filter parameters are optional.")
+    public List<CaseDefinitionResultDto> queryCaseDefinitions(
+            @McpToolParam CaseDefinitionQueryDto queryDto,
+            @McpToolParam(description = "Maximum number of results to return. "
+                    + "If not specified, defaults to the configured maximum. "
+                    + "Cannot exceed the configured maximum.") Integer maxResults) {
+        LOG.info("Querying case definitions with criteria: {}", queryDto);
+
+        int limit = maxResults != null ? Math.min(maxResults, defaultMaxResults) : defaultMaxResults;
+        List<CaseDefinitionResultDto> resultDtos = queryDto.toQuery(repositoryService).list().stream()
+                .limit(limit)
+                .map(CaseDefinitionResultDto::fromCaseDefinition)
+                .toList();
+
+        LOG.info("Case definition query returned {} results", resultDtos.size());
+        return resultDtos;
+    }
+
+    // ---- Decision Definition Query ----
+
+    @McpTool(description = "Query decision definitions in the process engine. "
+            + "Returns a list of decision definitions matching the given filter criteria. "
+            + "A decision definition is a deployed DMN 1.0 decision table or literal expression "
+            + "that can be evaluated to produce a result. "
+            + "Use this tool to discover available decision logic, find specific versions, "
+            + "or look up definitions by their decision requirements definition. "
+            + "All filter parameters are optional.")
+    public List<DecisionDefinitionResultDto> queryDecisionDefinitions(
+            @McpToolParam DecisionDefinitionQueryDto queryDto,
+            @McpToolParam(description = "Maximum number of results to return. "
+                    + "If not specified, defaults to the configured maximum. "
+                    + "Cannot exceed the configured maximum.") Integer maxResults) {
+        LOG.info("Querying decision definitions with criteria: {}", queryDto);
+
+        int limit = maxResults != null ? Math.min(maxResults, defaultMaxResults) : defaultMaxResults;
+        List<DecisionDefinitionResultDto> resultDtos = queryDto.toQuery(repositoryService).list().stream()
+                .limit(limit)
+                .map(DecisionDefinitionResultDto::fromDecisionDefinition)
+                .toList();
+
+        LOG.info("Decision definition query returned {} results", resultDtos.size());
+        return resultDtos;
+    }
+
+    // ---- Decision Requirements Definition Query ----
+
+    @McpTool(description = "Query decision requirements definitions in the process engine. "
+            + "Returns a list of decision requirements definitions matching the given filter criteria. "
+            + "A decision requirements definition is a container for a set of related decision definitions "
+            + "that belong to the same DMN resource (decision requirements graph). "
+            + "Use this tool to discover DMN resources and their versions. "
+            + "All filter parameters are optional.")
+    public List<DecisionRequirementsDefinitionResultDto> queryDecisionRequirementsDefinitions(
+            @McpToolParam DecisionRequirementsDefinitionQueryDto queryDto,
+            @McpToolParam(description = "Maximum number of results to return. "
+                    + "If not specified, defaults to the configured maximum. "
+                    + "Cannot exceed the configured maximum.") Integer maxResults) {
+        LOG.info("Querying decision requirements definitions with criteria: {}", queryDto);
+
+        int limit = maxResults != null ? Math.min(maxResults, defaultMaxResults) : defaultMaxResults;
+        List<DecisionRequirementsDefinitionResultDto> resultDtos = queryDto.toQuery(repositoryService).list().stream()
+                .limit(limit)
+                .map(DecisionRequirementsDefinitionResultDto::fromDecisionRequirementsDefinition)
+                .toList();
+
+        LOG.info("Decision requirements definition query returned {} results", resultDtos.size());
+        return resultDtos;
+    }
 }

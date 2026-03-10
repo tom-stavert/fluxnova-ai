@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 /**
  * Secures all MCP endpoints with HTTP Basic Auth and Bearer token support.
@@ -38,10 +39,12 @@ public class SecurityConfig {
 
   private final EngineBasicAuthProvider authenticationProvider;
   private final BearerTokenFilter bearerTokenFilter;
+  private final EngineAuthenticationContextFilter engineAuthContextFilter;
 
   public SecurityConfig(ProcessEngine processEngine) {
     this.authenticationProvider = new EngineBasicAuthProvider(processEngine);
     this.bearerTokenFilter = new BearerTokenFilter();
+    this.engineAuthContextFilter = new EngineAuthenticationContextFilter(processEngine);
   }
 
   @Bean
@@ -57,6 +60,8 @@ public class SecurityConfig {
         .authenticationProvider(authenticationProvider)
         // Bearer token filter runs before Spring's Basic Auth processing
         .addFilterBefore(bearerTokenFilter, UsernamePasswordAuthenticationFilter.class)
+        // Propagate authenticated principal into the engine's identity context
+        .addFilterAfter(engineAuthContextFilter, BasicAuthenticationFilter.class)
         // MCP clients are stateless — no server-side session needed
         .sessionManagement(session -> session
             .sessionCreationPolicy(SessionCreationPolicy.STATELESS)

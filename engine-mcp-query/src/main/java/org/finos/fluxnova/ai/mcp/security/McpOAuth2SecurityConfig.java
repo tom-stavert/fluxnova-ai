@@ -1,11 +1,13 @@
 package org.finos.fluxnova.ai.mcp.security;
 
+import org.finos.fluxnova.bpm.engine.ProcessEngine;
 import org.finos.fluxnova.bpm.spring.boot.starter.security.oauth2.impl.AuthorizeTokenFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.security.oauth2.client.ConditionalOnOAuth2ClientRegistrationProperties;
+import org.springframework.boot.autoconfigure.security.oauth2.client.ClientsConfiguredCondition;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -13,6 +15,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 /**
  * Activates OAuth2 authentication for MCP endpoints when OAuth2 client
@@ -35,7 +38,7 @@ import org.springframework.security.web.SecurityFilterChain;
  * </ul>
  */
 @Configuration
-@ConditionalOnOAuth2ClientRegistrationProperties
+@Conditional(ClientsConfiguredCondition.class)
 public class McpOAuth2SecurityConfig {
 
     private static final Logger logger = LoggerFactory.getLogger(McpOAuth2SecurityConfig.class);
@@ -48,16 +51,25 @@ public class McpOAuth2SecurityConfig {
     }
 
     @Bean
+    @ConditionalOnMissingBean
+    public EngineAuthenticationContextFilter engineAuthContextFilter(ProcessEngine processEngine) {
+        return new EngineAuthenticationContextFilter(processEngine);
+    }
+
+    @Bean
     public SecurityFilterChain mcpOAuth2FilterChain(HttpSecurity http,
-                                                    AuthorizeTokenFilter authorizeTokenFilter) throws Exception {
+                                                    AuthorizeTokenFilter authorizeTokenFilter,
+                                                    EngineAuthenticationContextFilter engineAuthContextFilter) throws Exception {
         logger.info("Enabling OAuth2 authentication for MCP endpoints");
 
         http
-                .securityMatcher("/sse", "/mcp/**")
+                .securityMatcher("/mcp")
                 .authorizeHttpRequests(c -> c
                         .anyRequest().authenticated()
                 )
                 .addFilterAfter(authorizeTokenFilter, OAuth2AuthorizationRequestRedirectFilter.class)
+                // Propagate authenticated principal into the engine's identity context
+                .addFilterAfter(engineAuthContextFilter, BasicAuthenticationFilter.class)
                 .anonymous(AbstractHttpConfigurer::disable)
                 .oidcLogout(c -> c.backChannel(Customizer.withDefaults()))
                 .oauth2Login(Customizer.withDefaults())

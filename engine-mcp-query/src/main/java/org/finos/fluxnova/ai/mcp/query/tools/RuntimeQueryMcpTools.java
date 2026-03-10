@@ -11,7 +11,7 @@ import org.springaicommunity.mcp.annotation.McpToolParam;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Value;
 
 /**
  * MCP tools for querying runtime process engine data.
@@ -26,9 +26,12 @@ public class RuntimeQueryMcpTools {
     private static final Logger LOG = LoggerFactory.getLogger(RuntimeQueryMcpTools.class);
 
     private final RuntimeService runtimeService;
+    private final int defaultMaxResults;
 
-    public RuntimeQueryMcpTools(RuntimeService runtimeService) {
+    public RuntimeQueryMcpTools(RuntimeService runtimeService,
+            @Value("${fluxnova.mcp.query.max-results:200}") int defaultMaxResults) {
         this.runtimeService = runtimeService;
+        this.defaultMaxResults = defaultMaxResults;
     }
 
     // ---- Process Instance Query ----
@@ -38,12 +41,18 @@ public class RuntimeQueryMcpTools {
             + "Process instances represent individual executions of a process definition (workflow). "
             + "Use this tool to find active or suspended process instances by their definition, business key, "
             + "tenant, incident status, or other attributes. All filter parameters are optional.")
-    public List<ProcessInstanceResultDto> queryProcessInstances(@McpToolParam ProcessInstanceQueryDto queryDto) {
+    public List<ProcessInstanceResultDto> queryProcessInstances(
+            @McpToolParam ProcessInstanceQueryDto queryDto,
+            @McpToolParam(description = "Maximum number of results to return. "
+                    + "If not specified, defaults to the configured maximum. "
+                    + "Cannot exceed the configured maximum.") Integer maxResults) {
         LOG.info("Querying process instances with criteria: {}", queryDto);
 
+        int limit = maxResults != null ? Math.min(maxResults, defaultMaxResults) : defaultMaxResults;
         List<ProcessInstanceResultDto> resultDtos = queryDto.toQuery(runtimeService).list().stream()
+                .limit(limit)
                 .map(ProcessInstanceResultDto::fromProcessInstance)
-                .collect(Collectors.toList());
+                .toList();
 
         LOG.info("Process instance query returned {} results", resultDtos.size());
         return resultDtos;
@@ -58,12 +67,18 @@ public class RuntimeQueryMcpTools {
             + "multi-instance activities create additional concurrent executions. "
             + "Use this tool to inspect execution state, find executions waiting for signals or messages, "
             + "or examine execution-level details. All filter parameters are optional.")
-    public List<ExecutionResultDto> queryExecutions(@McpToolParam ExecutionQueryDto queryDto) {
+    public List<ExecutionResultDto> queryExecutions(
+            @McpToolParam ExecutionQueryDto queryDto,
+            @McpToolParam(description = "Maximum number of results to return. "
+                    + "If not specified, defaults to the configured maximum. "
+                    + "Cannot exceed the configured maximum.") Integer maxResults) {
         LOG.info("Querying executions with criteria: {}", queryDto);
 
+        int limit = maxResults != null ? Math.min(maxResults, defaultMaxResults) : defaultMaxResults;
         List<ExecutionResultDto> resultDtos = queryDto.toQuery(runtimeService).list().stream()
+                .limit(limit)
                 .map(ExecutionResultDto::fromExecution)
-                .collect(Collectors.toList());
+                .toList();
 
         LOG.info("Execution query returned {} results", resultDtos.size());
         return resultDtos;
@@ -77,12 +92,18 @@ public class RuntimeQueryMcpTools {
             + "such as failed jobs, failed external tasks, or other error conditions. "
             + "Use this tool to find and diagnose process execution failures. "
             + "All filter parameters are optional.")
-    public List<IncidentResultDto> queryIncidents(@McpToolParam IncidentQueryDto queryDto) {
+    public List<IncidentResultDto> queryIncidents(
+            @McpToolParam IncidentQueryDto queryDto,
+            @McpToolParam(description = "Maximum number of results to return. "
+                    + "If not specified, defaults to the configured maximum. "
+                    + "Cannot exceed the configured maximum.") Integer maxResults) {
         LOG.info("Querying incidents with criteria: {}", queryDto);
 
+        int limit = maxResults != null ? Math.min(maxResults, defaultMaxResults) : defaultMaxResults;
         List<IncidentResultDto> resultDtos = queryDto.toQuery(runtimeService).list().stream()
+                .limit(limit)
                 .map(IncidentResultDto::fromIncident)
-                .collect(Collectors.toList());
+                .toList();
 
         LOG.info("Incident query returned {} results", resultDtos.size());
         return resultDtos;
@@ -96,12 +117,18 @@ public class RuntimeQueryMcpTools {
             + "such as a message event, signal event, compensation event, or conditional event. "
             + "Use this tool to find which process instances are waiting for specific events. "
             + "All filter parameters are optional.")
-    public List<EventSubscriptionResultDto> queryEventSubscriptions(@McpToolParam EventSubscriptionQueryDto queryDto) {
+    public List<EventSubscriptionResultDto> queryEventSubscriptions(
+            @McpToolParam EventSubscriptionQueryDto queryDto,
+            @McpToolParam(description = "Maximum number of results to return. "
+                    + "If not specified, defaults to the configured maximum. "
+                    + "Cannot exceed the configured maximum.") Integer maxResults) {
         LOG.info("Querying event subscriptions with criteria: {}", queryDto);
 
+        int limit = maxResults != null ? Math.min(maxResults, defaultMaxResults) : defaultMaxResults;
         List<EventSubscriptionResultDto> resultDtos = queryDto.toQuery(runtimeService).list().stream()
+                .limit(limit)
                 .map(EventSubscriptionResultDto::fromEventSubscription)
-                .collect(Collectors.toList());
+                .toList();
 
         LOG.info("Event subscription query returned {} results", resultDtos.size());
         return resultDtos;
@@ -114,7 +141,11 @@ public class RuntimeQueryMcpTools {
             + "Variables store data associated with process instances, executions, tasks, or case instances. "
             + "Each variable has a name, type, and value. Use this tool to inspect the current state of "
             + "process data across running or completed activities. All filter parameters are optional.")
-    public List<VariableInstanceResultDto> queryVariableInstances(@McpToolParam VariableInstanceQueryDto queryDto) {
+    public List<VariableInstanceResultDto> queryVariableInstances(
+            @McpToolParam VariableInstanceQueryDto queryDto,
+            @McpToolParam(description = "Maximum number of results to return. "
+                    + "If not specified, defaults to the configured maximum. "
+                    + "Cannot exceed the configured maximum.") Integer maxResults) {
         LOG.info("Querying variable instances with criteria: {}", queryDto);
 
         VariableInstanceQuery query = queryDto.toQuery(runtimeService);
@@ -122,9 +153,11 @@ public class RuntimeQueryMcpTools {
         // Disable binary fetching by default to avoid loading large blobs
         query.disableBinaryFetching();
 
+        int limit = maxResults != null ? Math.min(maxResults, defaultMaxResults) : defaultMaxResults;
         List<VariableInstanceResultDto> resultDtos = query.list().stream()
+                .limit(limit)
                 .map(VariableInstanceResultDto::fromVariableInstance)
-                .collect(Collectors.toList());
+                .toList();
 
         LOG.info("Variable instance query returned {} results", resultDtos.size());
         return resultDtos;

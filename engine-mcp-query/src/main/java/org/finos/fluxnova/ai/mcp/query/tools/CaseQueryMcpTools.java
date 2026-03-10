@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.springaicommunity.mcp.annotation.McpTool;
 import org.springaicommunity.mcp.annotation.McpToolParam;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 
@@ -20,7 +19,6 @@ import java.util.List;
  * Provides read-only query access to CMMN case instances and case executions
  * through the process engine's CaseService Query API.
  */
-@Component
 public class CaseQueryMcpTools {
 
     private static final Logger LOG = LoggerFactory.getLogger(CaseQueryMcpTools.class);
@@ -29,7 +27,7 @@ public class CaseQueryMcpTools {
     private final int defaultMaxResults;
 
     public CaseQueryMcpTools(CaseService caseService,
-            @Value("${fluxnova.mcp.query.max-results:200}") int defaultMaxResults) {
+                             @Value("${fluxnova.mcp.query.max-results:200}") int defaultMaxResults) {
         this.caseService = caseService;
         this.defaultMaxResults = defaultMaxResults;
     }

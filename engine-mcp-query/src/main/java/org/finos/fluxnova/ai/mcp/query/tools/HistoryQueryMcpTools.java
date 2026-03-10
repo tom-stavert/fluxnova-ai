@@ -6,14 +6,12 @@ import org.finos.fluxnova.bpm.engine.HistoryService;
 import org.springaicommunity.mcp.annotation.McpTool;
 import org.springaicommunity.mcp.annotation.McpToolParam;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 /**
  * MCP tools for querying historic data from the process engine via {@link HistoryService}.
  */
-@Component
 public class HistoryQueryMcpTools {
 
     private final HistoryService historyService;

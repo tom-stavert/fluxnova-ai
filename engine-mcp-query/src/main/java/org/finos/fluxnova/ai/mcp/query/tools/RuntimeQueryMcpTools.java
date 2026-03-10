@@ -8,8 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springaicommunity.mcp.annotation.McpTool;
 import org.springaicommunity.mcp.annotation.McpToolParam;
-import org.springframework.stereotype.Component;
-
 import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -20,7 +18,6 @@ import org.springframework.beans.factory.annotation.Value;
  * event subscriptions, and variable instances through the process engine's
  * RuntimeService Query API.
  */
-@Component
 public class RuntimeQueryMcpTools {
 
     private static final Logger LOG = LoggerFactory.getLogger(RuntimeQueryMcpTools.class);

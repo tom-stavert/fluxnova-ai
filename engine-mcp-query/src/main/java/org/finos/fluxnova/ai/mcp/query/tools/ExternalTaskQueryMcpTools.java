@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.springaicommunity.mcp.annotation.McpTool;
 import org.springaicommunity.mcp.annotation.McpToolParam;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 
@@ -18,7 +17,6 @@ import java.util.List;
  * Provides read-only query access to external tasks
  * through the process engine's ExternalTaskService Query API.
  */
-@Component
 public class ExternalTaskQueryMcpTools {
 
     private static final Logger LOG = LoggerFactory.getLogger(ExternalTaskQueryMcpTools.class);
@@ -27,7 +25,7 @@ public class ExternalTaskQueryMcpTools {
     private final int defaultMaxResults;
 
     public ExternalTaskQueryMcpTools(ExternalTaskService externalTaskService,
-            @Value("${fluxnova.mcp.query.max-results:200}") int defaultMaxResults) {
+                                     @Value("${fluxnova.mcp.query.max-results:200}") int defaultMaxResults) {
         this.externalTaskService = externalTaskService;
         this.defaultMaxResults = defaultMaxResults;
     }

@@ -7,8 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springaicommunity.mcp.annotation.McpTool;
 import org.springaicommunity.mcp.annotation.McpToolParam;
-import org.springframework.stereotype.Component;
-
 import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -18,7 +16,6 @@ import org.springframework.beans.factory.annotation.Value;
  * Provides read-only query access to user tasks
  * through the process engine's TaskService Query API.
  */
-@Component
 public class TaskQueryMcpTools {
 
     private static final Logger LOG = LoggerFactory.getLogger(TaskQueryMcpTools.class);

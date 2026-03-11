@@ -1,5 +1,6 @@
 package org.finos.fluxnova.ai.mcp.security;
 
+import org.springframework.beans.factory.BeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties;
@@ -10,10 +11,19 @@ public class OAuth2ClientsConfiguredCondition extends SpringBootCondition {
 
     @Override
     public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
-        OAuth2ClientProperties properties = context.getBeanFactory().getBean(OAuth2ClientProperties.class);
+        BeanFactory beanFactory = context.getBeanFactory();
+        if (beanFactory == null) {
+            return ConditionOutcome.noMatch("No BeanFactory available");
+        }
+
+        OAuth2ClientProperties properties = beanFactory
+                .getBeanProvider(OAuth2ClientProperties.class)
+                .getIfAvailable();
+
         if (properties != null && !properties.getRegistration().isEmpty()) {
             return ConditionOutcome.match("OAuth2 client registrations configured");
         }
+
         return ConditionOutcome.noMatch("No OAuth2 client registrations configured");
     }
 }

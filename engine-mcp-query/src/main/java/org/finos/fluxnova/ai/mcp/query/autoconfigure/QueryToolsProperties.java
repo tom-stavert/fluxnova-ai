@@ -23,6 +23,7 @@ public class QueryToolsProperties {
     private final ServiceToggle caseService = new ServiceToggle();
     private final ServiceToggle identity = new ServiceToggle();
     private final ServiceToggle management = new ServiceToggle();
+    private final ServiceToggle xml = new ServiceToggle();
 
     /**
      * Set of individual tool names to exclude from the MCP server.
@@ -68,6 +69,10 @@ public class QueryToolsProperties {
 
     public ServiceToggle getManagement() {
         return management;
+    }
+
+    public ServiceToggle getXml() {
+        return xml;
     }
 
     public Set<String> getExclude() {

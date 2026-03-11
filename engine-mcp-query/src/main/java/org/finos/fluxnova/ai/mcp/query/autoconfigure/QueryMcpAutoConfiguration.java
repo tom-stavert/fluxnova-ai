@@ -115,6 +115,13 @@ public class QueryMcpAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnProperty(name = "fluxnova.mcp.query.tools.xml.enabled",
+            havingValue = "true", matchIfMissing = true)
+    public XMLMcpTools xmlMcpTools(RepositoryService repositoryService) {
+        return new XMLMcpTools(repositoryService);
+    }
+
+    @Bean
     ToolSpecificationFilter toolSpecificationFilter(QueryToolsProperties properties) {
         return new ToolSpecificationFilter(properties.getExclude());
     }

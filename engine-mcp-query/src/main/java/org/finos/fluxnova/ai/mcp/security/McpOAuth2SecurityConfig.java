@@ -8,6 +8,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -56,6 +57,7 @@ public class McpOAuth2SecurityConfig {
     }
 
     @Bean
+    @Order(0)
     public SecurityFilterChain mcpOAuth2FilterChain(HttpSecurity http,
                                                     AuthorizeTokenFilter authorizeTokenFilter,
                                                     EngineAuthenticationContextFilter engineAuthContextFilter) throws Exception {

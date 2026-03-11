@@ -30,7 +30,7 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
  *
  * <p>The filter chain:
  * <ul>
- *   <li>Requires authentication on all {@code /sse} and {@code /mcp/**} requests.</li>
+ *   <li>Requires authentication on {@code /mcp/} requests.</li>
  *   <li>Uses {@link AuthorizeTokenFilter} from the starter-security module to transparently
  *       re-authorize expired access tokens on each request.</li>
  *   <li>Enables the standard OAuth2 authorization-code login flow.</li>
@@ -61,7 +61,7 @@ public class McpOAuth2SecurityConfig {
     public SecurityFilterChain mcpOAuth2FilterChain(HttpSecurity http,
                                                     AuthorizeTokenFilter authorizeTokenFilter,
                                                     EngineAuthenticationContextFilter engineAuthContextFilter) throws Exception {
-        logger.info("Enabling OAuth2 authentication for MCP endpoints");
+        logger.info("Enabling OAuth2 authentication for MCP endpoint");
 
         http
                 .securityMatcher("/mcp")

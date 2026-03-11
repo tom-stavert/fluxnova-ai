@@ -8,11 +8,10 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 /**
- * Secures all MCP endpoints with HTTP Basic Auth and Bearer token support.
+ * Secures all MCP endpoints with HTTP Basic Auth.
  *
  * <p>This configuration is the <em>fallback</em> activated only when no OAuth2 client
  * registrations are configured (i.e., {@code spring.security.oauth2.client.registration.*}
@@ -22,26 +21,17 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
  * directly against the Fluxnova process engine identity service — the same mechanism
  * used by the REST API.</p>
  *
- * <p>Authentication is resolved in the following order:
- * <ol>
- *   <li>{@link BearerTokenFilter} — checks {@code Authorization: Bearer <token>} first.</li>
- *   <li>HTTP Basic Auth via {@link EngineBasicAuthProvider} — checks username/password
- *       against the Fluxnova process engine identity service.</li>
- * </ol>
- *
- * <p>To add custom Bearer token validation (e.g. JWT, API keys), extend
- * {@link BearerTokenFilter} and override {@link BearerTokenFilter#validateToken(String)}.
+ * <p>HTTP Basic Auth via {@link EngineBasicAuthProvider} checks username/password
+ * against the Fluxnova process engine identity service.
  */
 @Configuration
 public class SecurityConfig {
 
   private final EngineBasicAuthProvider authenticationProvider;
-  private final BearerTokenFilter bearerTokenFilter;
   private final EngineAuthenticationContextFilter engineAuthContextFilter;
 
   public SecurityConfig(ProcessEngine processEngine) {
     this.authenticationProvider = new EngineBasicAuthProvider(processEngine);
-    this.bearerTokenFilter = new BearerTokenFilter();
     this.engineAuthContextFilter = new EngineAuthenticationContextFilter(processEngine);
   }
 
@@ -56,8 +46,6 @@ public class SecurityConfig {
         )
         .httpBasic(Customizer.withDefaults())
         .authenticationProvider(authenticationProvider)
-        // Bearer token filter runs before Spring's Basic Auth processing
-        .addFilterBefore(bearerTokenFilter, UsernamePasswordAuthenticationFilter.class)
         // Propagate authenticated principal into the engine's identity context
         .addFilterAfter(engineAuthContextFilter, BasicAuthenticationFilter.class)
         // MCP clients are stateless — no server-side session needed

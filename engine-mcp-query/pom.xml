@@ -72,6 +72,11 @@
       <groupId>io.swagger.core.v3</groupId>
       <artifactId>swagger-annotations-jakarta</artifactId>
     </dependency>
+    <!-- Spring Security (spring-security-core/web/config) — required by SecurityConfig -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-security</artifactId>
+    </dependency>
     <!--  Security: HTTP Basic Auth + Bearer token (fallback) and OAuth2 (when configured)  -->
     <dependency>
       <groupId>org.finos.fluxnova.bpm.springboot</groupId>

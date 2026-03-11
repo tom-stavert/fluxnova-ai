@@ -1,10 +1,9 @@
 package org.finos.fluxnova.ai.mcp.security;
 
 import org.finos.fluxnova.bpm.engine.ProcessEngine;
-import org.finos.fluxnova.bpm.spring.boot.starter.security.oauth2.impl.ClientsNotConfiguredCondition;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -34,7 +33,6 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
  * {@link BearerTokenFilter} and override {@link BearerTokenFilter#validateToken(String)}.
  */
 @Configuration
-@Conditional(ClientsNotConfiguredCondition.class)
 public class SecurityConfig {
 
   private final EngineBasicAuthProvider authenticationProvider;
@@ -48,6 +46,7 @@ public class SecurityConfig {
   }
 
   @Bean
+  @Order(1)
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http
         // Scope this chain to MCP paths only

@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import org.springaicommunity.mcp.annotation.McpTool;
 import org.springaicommunity.mcp.annotation.McpToolParam;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 
@@ -22,7 +21,6 @@ import java.util.List;
  * Provides read-only query access to users, groups, and tenants
  * through the process engine's IdentityService Query API.
  */
-@Component
 public class IdentityQueryMcpTools {
 
     private static final Logger LOG = LoggerFactory.getLogger(IdentityQueryMcpTools.class);
@@ -31,7 +29,7 @@ public class IdentityQueryMcpTools {
     private final int defaultMaxResults;
 
     public IdentityQueryMcpTools(IdentityService identityService,
-            @Value("${fluxnova.mcp.query.max-results:200}") int defaultMaxResults) {
+                                 @Value("${fluxnova.mcp.query.max-results:200}") int defaultMaxResults) {
         this.identityService = identityService;
         this.defaultMaxResults = defaultMaxResults;
     }

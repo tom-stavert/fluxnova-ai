@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
 import org.springaicommunity.mcp.annotation.McpTool;
 import org.springaicommunity.mcp.annotation.McpToolParam;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 
@@ -24,7 +23,6 @@ import java.util.List;
  * Provides read-only query access to jobs, job definitions, batches, and schema log entries
  * through the process engine's ManagementService Query API.
  */
-@Component
 public class ManagementQueryMcpTools {
 
     private static final Logger LOG = LoggerFactory.getLogger(ManagementQueryMcpTools.class);
@@ -33,7 +31,7 @@ public class ManagementQueryMcpTools {
     private final int defaultMaxResults;
 
     public ManagementQueryMcpTools(ManagementService managementService,
-            @Value("${fluxnova.mcp.query.max-results:200}") int defaultMaxResults) {
+                                   @Value("${fluxnova.mcp.query.max-results:200}") int defaultMaxResults) {
         this.managementService = managementService;
         this.defaultMaxResults = defaultMaxResults;
     }

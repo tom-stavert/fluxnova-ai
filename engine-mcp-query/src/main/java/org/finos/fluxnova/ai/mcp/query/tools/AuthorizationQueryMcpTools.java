@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.springaicommunity.mcp.annotation.McpTool;
 import org.springaicommunity.mcp.annotation.McpToolParam;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 
@@ -18,7 +17,6 @@ import java.util.List;
  * Provides read-only query access to authorizations
  * through the process engine's AuthorizationService Query API.
  */
-@Component
 public class AuthorizationQueryMcpTools {
 
     private static final Logger LOG = LoggerFactory.getLogger(AuthorizationQueryMcpTools.class);
@@ -27,7 +25,7 @@ public class AuthorizationQueryMcpTools {
     private final int defaultMaxResults;
 
     public AuthorizationQueryMcpTools(AuthorizationService authorizationService,
-            @Value("${fluxnova.mcp.query.max-results:200}") int defaultMaxResults) {
+                                      @Value("${fluxnova.mcp.query.max-results:200}") int defaultMaxResults) {
         this.authorizationService = authorizationService;
         this.defaultMaxResults = defaultMaxResults;
     }

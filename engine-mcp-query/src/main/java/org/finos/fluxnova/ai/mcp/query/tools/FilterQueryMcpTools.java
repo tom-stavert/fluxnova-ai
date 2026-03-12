@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.springaicommunity.mcp.annotation.McpTool;
 import org.springaicommunity.mcp.annotation.McpToolParam;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 
@@ -18,7 +17,6 @@ import java.util.List;
  * Provides read-only query access to saved query filters
  * through the process engine's FilterService Query API.
  */
-@Component
 public class FilterQueryMcpTools {
 
     private static final Logger LOG = LoggerFactory.getLogger(FilterQueryMcpTools.class);
@@ -27,7 +25,7 @@ public class FilterQueryMcpTools {
     private final int defaultMaxResults;
 
     public FilterQueryMcpTools(FilterService filterService,
-            @Value("${fluxnova.mcp.query.max-results:200}") int defaultMaxResults) {
+                               @Value("${fluxnova.mcp.query.max-results:200}") int defaultMaxResults) {
         this.filterService = filterService;
         this.defaultMaxResults = defaultMaxResults;
     }

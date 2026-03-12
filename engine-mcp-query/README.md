@@ -1,19 +1,23 @@
 # engine-mcp-query
 
-A read-only [MCP](https://modelcontextprotocol.io/) server extension for the [Fluxnova](https://github.com/finos/fluxnova) process engine. It exposes process engine query functionality as MCP tools, allowing LLM-based agents to inspect and monitor running workflows without being able to modify them.
+A read-only [MCP](https://modelcontextprotocol.io/) server extension for
+the [Fluxnova](https://github.com/finos/fluxnova) process engine. It exposes process engine query functionality as MCP
+tools, allowing LLM-based agents to inspect and monitor running workflows without being able to modify them.
 
 ## Overview
 
-`engine-mcp-query` interacts directly with the Fluxnova process engine Query API to provide safe, read-only access to runtime data. It does **not** depend on the `engine-rest` module — all queries are executed in-process via the engine's Java services.
+`engine-mcp-query` interacts directly with the Fluxnova process engine Query API to provide safe, read-only access to
+runtime data. It does **not** depend on the `engine-rest` module — all queries are executed in-process via the engine's
+Java services.
 
 ### Available Tools
 
-The extension ships tool components covering eleven engine services:
+The extension ships tool components covering twelve engine services:
 
 #### RuntimeService (`RuntimeQueryMcpTools`)
 
 | Tool                      | Description                                                                                                 |
-| ------------------------- | ----------------------------------------------------------------------------------------------------------- |
+|---------------------------|-------------------------------------------------------------------------------------------------------------|
 | `queryProcessInstances`   | Find active or suspended process instances by definition, business key, tenant, incident status, and more.  |
 | `queryExecutions`         | Inspect execution paths within process instances, including those waiting for signals or messages.          |
 | `queryIncidents`          | Diagnose process execution failures such as failed jobs or failed external tasks.                           |
@@ -23,45 +27,45 @@ The extension ships tool components covering eleven engine services:
 #### RepositoryService (`RepositoryQueryMcpTools`)
 
 | Tool                      | Description                                                                                |
-| ------------------------- | ------------------------------------------------------------------------------------------ |
+|---------------------------|--------------------------------------------------------------------------------------------|
 | `queryProcessDefinitions` | Discover available workflow templates, find specific versions, or check deployment status. |
 | `queryDeployments`        | List deployments by name, source, tenant, or date range.                                   |
 
 #### TaskService (`TaskQueryMcpTools`)
 
 | Tool         | Description                                                                                                     |
-| ------------ | --------------------------------------------------------------------------------------------------------------- |
+|--------------|-----------------------------------------------------------------------------------------------------------------|
 | `queryTasks` | Find user tasks by assignee, candidate group, process context, priority, due dates, delegation state, and more. |
 
 #### ExternalTaskService (`ExternalTaskQueryMcpTools`)
 
 | Tool                 | Description                                                                                                        |
-| -------------------- | ------------------------------------------------------------------------------------------------------------------ |
+|----------------------|--------------------------------------------------------------------------------------------------------------------|
 | `queryExternalTasks` | Find external tasks by topic, worker, process instance, activity, priority, lock status, retry status, and tenant. |
 
 #### AuthorizationService (`AuthorizationQueryMcpTools`)
 
 | Tool                  | Description                                                                         |
-| --------------------- | ----------------------------------------------------------------------------------- |
+|-----------------------|-------------------------------------------------------------------------------------|
 | `queryAuthorizations` | Find authorization entries by id, type, user, group, resource type, or resource id. |
 
 #### FilterService (`FilterQueryMcpTools`)
 
 | Tool           | Description                                                                 |
-| -------------- | --------------------------------------------------------------------------- |
+|----------------|-----------------------------------------------------------------------------|
 | `queryFilters` | Find saved task filters by id, resource type, name, name pattern, or owner. |
 
 #### CaseService (`CaseQueryMcpTools`)
 
 | Tool                  | Description                                                                                                                                   |
-| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+|-----------------------|-----------------------------------------------------------------------------------------------------------------------------------------------|
 | `queryCaseInstances`  | Find CMMN case instances by id, business key, case definition, lifecycle state (active, completed, terminated), super/sub linkage, or tenant. |
 | `queryCaseExecutions` | Find CMMN case executions (stages, milestones, tasks) within case instances by id, activity, case definition, or lifecycle state.             |
 
 #### IdentityService (`IdentityQueryMcpTools`)
 
 | Tool           | Description                                                                                                     |
-| -------------- | --------------------------------------------------------------------------------------------------------------- |
+|----------------|-----------------------------------------------------------------------------------------------------------------|
 | `queryUsers`   | Find users by id, first/last name, email, group membership, or tenant membership. Passwords are never returned. |
 | `queryGroups`  | Find groups by id, name, type, member user, or tenant.                                                          |
 | `queryTenants` | Find tenants by id, name, or by the users and groups that are members of them.                                  |
@@ -69,16 +73,28 @@ The extension ships tool components covering eleven engine services:
 #### ManagementService (`ManagementQueryMcpTools`)
 
 | Tool                  | Description                                                                                                       |
-| --------------------- | ----------------------------------------------------------------------------------------------------------------- |
+|-----------------------|-------------------------------------------------------------------------------------------------------------------|
 | `queryJobs`           | Find async jobs by id, definition, process, activity, retry status, due date, priority, exception, and tenant.    |
 | `queryJobDefinitions` | Find job definitions by id, activity, process definition, job type, configuration, override priority, and tenant. |
 | `queryBatches`        | Find batch operations (e.g. instance migration, deletion, set-retries) by id, type, activity state, and tenant.   |
 | `querySchemaLog`      | Find schema log entries recording the database schema version history.                                            |
 
+#### RepositoryService — XML models (`XMLMcpTools`)
+
+| Tool                              | Description                                                                             |
+|-----------------------------------|-----------------------------------------------------------------------------------------|
+| `getProcessModelXml`              | Return the raw BPMN 2.0 XML source of a deployed process definition.                    |
+| `getDecisionModelXml`             | Return the raw DMN 1.1 XML source of a deployed decision definition.                    |
+| `getDecisionRequirementsModelXml` | Return the raw DMN 1.1 XML source of a deployed decision requirements definition (DRG). |
+| `getCaseModelXml`                 | Return the raw CMMN 1.0 XML source of a deployed case definition.                       |
+
+Unlike the query tools, XML tools accept a single ID parameter and return the complete XML document as a string rather
+than a list of result DTOs.
+
 #### HistoryService (`HistoryQueryMcpTools`)
 
 | Tool                                 | Description                                                                                                          |
-| ------------------------------------ | -------------------------------------------------------------------------------------------------------------------- |
+|--------------------------------------|----------------------------------------------------------------------------------------------------------------------|
 | `queryHistoricProcessInstances`      | Find completed or running process instances with historical context: start/end times, state, business key, and more. |
 | `queryHistoricActivityInstances`     | Find historical activity instance records including start/end times, type, assignee, completion, and cancellation.   |
 | `queryHistoricTaskInstances`         | Find historical task records including assignee, owner, priority, lifecycle dates, and candidate group details.      |
@@ -94,7 +110,8 @@ The extension ships tool components covering eleven engine services:
 | `queryHistoricBatches`               | Find historical batch operation records by id, type, completion state, and tenant.                                   |
 | `queryHistoricExternalTaskLog`       | Find external task lifecycle log entries tracking creation, success, failure, and deletion events.                   |
 
-Each tool accepts a query DTO with optional filter criteria and an optional `maxResults` parameter to control the number of results returned. Results are serialized to JSON.
+Each tool accepts a query DTO with optional filter criteria and an optional `maxResults` parameter to control the number
+of results returned. Results are serialized to JSON.
 
 ## Requirements
 
@@ -108,6 +125,7 @@ Each tool accepts a query DTO with optional filter criteria and an optional `max
 Add the dependency to your Fluxnova Spring Boot application:
 
 ```xml
+
 <dependency>
     <groupId>org.finos.fluxnova.ai.mcp</groupId>
     <artifactId>engine-mcp-query</artifactId>
@@ -115,19 +133,27 @@ Add the dependency to your Fluxnova Spring Boot application:
 </dependency>
 ```
 
-The extension uses Spring Boot auto-configuration. Once the JAR is on the classpath, the `QueryMcpAutoConfiguration` class is detected automatically via `META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports`.
+The extension uses Spring Boot auto-configuration. Once the JAR is on the classpath, the `QueryMcpAutoConfiguration`
+class is detected automatically via `META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports`.
 
-No additional configuration is required — the extension picks up the engine service beans already present in your Fluxnova application context.
+No additional configuration is required — the extension picks up the engine service beans already present in your
+Fluxnova application context.
 
 ## How It Works
 
 1. **Auto-configuration** registers each tool class as a Spring bean, guarded by a `@ConditionalOnProperty` toggle.
-2. **Tool classes** (`RuntimeQueryMcpTools`, `RepositoryQueryMcpTools`, `TaskQueryMcpTools`, `ExternalTaskQueryMcpTools`, `AuthorizationQueryMcpTools`, `FilterQueryMcpTools`, `CaseQueryMcpTools`, `IdentityQueryMcpTools`, `ManagementQueryMcpTools`, `HistoryQueryMcpTools`) inject their respective engine service and expose `@McpTool`-annotated methods.
+2. **Tool classes** (`RuntimeQueryMcpTools`, `RepositoryQueryMcpTools`, `TaskQueryMcpTools`,`ExternalTaskQueryMcpTools`,
+   `AuthorizationQueryMcpTools`, `FilterQueryMcpTools`, `CaseQueryMcpTools`,`IdentityQueryMcpTools`,
+   `ManagementQueryMcpTools`, `HistoryQueryMcpTools`, `XMLMcpTools`) inject their respective engine service and expose
+   `@McpTool`-annotated methods.
 3. Each tool method:
-   - Accepts a query DTO (e.g. `ProcessInstanceQueryDto`) describing the filter criteria, and an optional `maxResults` parameter.
-   - Builds a native engine query (`RuntimeService.createProcessInstanceQuery()`, etc.) by applying only the non-null filters from the DTO.
-   - Applies a result limit: `maxResults` if provided (capped at the configured maximum), otherwise the configured default.
-   - Maps the engine entity results into lightweight result DTOs and serializes them to JSON.
+    - Accepts a query DTO (e.g. `ProcessInstanceQueryDto`) describing the filter criteria, and an optional `maxResults`
+      parameter.
+    - Builds a native engine query (`RuntimeService.createProcessInstanceQuery()`, etc.) by applying only the non-null
+      filters from the DTO.
+    - Applies a result limit: `maxResults` if provided (capped at the configured maximum), otherwise the configured
+      default.
+    - Maps the engine entity results into lightweight result DTOs and serializes them to JSON.
 
 ## Configuration
 
@@ -136,7 +162,7 @@ The extension supports the following application properties:
 ### General
 
 | Property                         | Default | Description                                                                                                                                                                  |
-| -------------------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|----------------------------------|---------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `fluxnova.mcp.query.max-results` | `200`   | Maximum number of results any tool call can return. Individual tool calls may request fewer via the `maxResults` tool parameter, but this value acts as an absolute ceiling. |
 
 ### Service-Level Toggles
@@ -144,7 +170,7 @@ The extension supports the following application properties:
 Each engine service's tools can be enabled or disabled as a group. All services are enabled by default.
 
 | Property                                         | Default | Description                       |
-| ------------------------------------------------ | ------- | --------------------------------- |
+|--------------------------------------------------|---------|-----------------------------------|
 | `fluxnova.mcp.query.tools.repository.enabled`    | `true`  | Enable RepositoryService tools    |
 | `fluxnova.mcp.query.tools.runtime.enabled`       | `true`  | Enable RuntimeService tools       |
 | `fluxnova.mcp.query.tools.task.enabled`          | `true`  | Enable TaskService tools          |
@@ -155,13 +181,14 @@ Each engine service's tools can be enabled or disabled as a group. All services 
 | `fluxnova.mcp.query.tools.case-service.enabled`  | `true`  | Enable CaseService tools          |
 | `fluxnova.mcp.query.tools.identity.enabled`      | `true`  | Enable IdentityService tools      |
 | `fluxnova.mcp.query.tools.management.enabled`    | `true`  | Enable ManagementService tools    |
+| `fluxnova.mcp.query.tools.xml.enabled`           | `true`  | Enable XML model retrieval tools  |
 
 ### Per-Tool Exclusion
 
 Individual tools can be excluded by name, even when their parent service is enabled.
 
 | Property                           | Default   | Description                                   |
-| ---------------------------------- | --------- | --------------------------------------------- |
+|------------------------------------|-----------|-----------------------------------------------|
 | `fluxnova.mcp.query.tools.exclude` | _(empty)_ | Comma-separated list of tool names to exclude |
 
 ### Examples
@@ -234,7 +261,9 @@ Pass `maxResults` as a separate tool parameter (e.g. `10`) to limit how many res
 
 ```json
 {
-  "processInstanceIdIn": ["abc-123"],
+  "processInstanceIdIn": [
+    "abc-123"
+  ],
   "variableName": "orderTotal"
 }
 ```
@@ -244,9 +273,29 @@ Pass `maxResults` as a separate tool parameter (e.g. `10`) to limit how many res
 ```json
 {
   "eventType": "signal",
-  "tenantIdIn": ["tenant-a", "tenant-b"]
+  "tenantIdIn": [
+    "tenant-a",
+    "tenant-b"
+  ]
 }
 ```
+
+### Retrieve the BPMN XML for a process definition
+
+First use `queryProcessDefinitions` to find the process definition ID, then call `getProcessModelXml` with that ID. The
+tool returns the full BPMN 2.0 XML string, e.g.:
+
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" ...>
+  <process id="invoice-approval" name="Invoice Approval" isExecutable="true">
+    ...
+  </process>
+</definitions>
+```
+
+The same pattern applies to DMN files via `getDecisionModelXml` / `getDecisionRequirementsModelXml`, and CMMN files via
+`getCaseModelXml`.
 
 ## Project Structure
 
@@ -293,15 +342,9 @@ src/main/java/org/finos/fluxnova/ai/mcp/query/
     ├── TaskQueryMcpTools.java                # MCP tools for TaskService queries
     ├── ExternalTaskQueryMcpTools.java        # MCP tools for ExternalTaskService queries
     ├── AuthorizationQueryMcpTools.java       # MCP tools for AuthorizationService queries
-    └── FilterQueryMcpTools.java              # MCP tools for FilterService queries
+    ├── FilterQueryMcpTools.java              # MCP tools for FilterService queries
+    └── XMLMcpTools.java                      # MCP tools for raw XML model retrieval (BPMN, DMN, CMMN)
 ```
-
-## Design Principles
-
-- **Read-only** — No tool can start, modify, suspend, or delete any engine entity. Only query operations are exposed.
-- **No engine-rest dependency** — Queries use the engine's native Java Query API directly, avoiding coupling to the REST layer.
-- **Self-describing for LLMs** — Tool descriptions and `@Schema` annotations on query DTO fields are written to be meaningful to an LLM agent, sourced from the engine's Javadoc and OpenAPI specifications.
-- **Safe defaults** — Binary variable fetching is disabled by default in variable queries to avoid loading large blobs. All queries are subject to a configurable result cap (default: 200) to prevent unbounded data retrieval.
 
 ## Building
 

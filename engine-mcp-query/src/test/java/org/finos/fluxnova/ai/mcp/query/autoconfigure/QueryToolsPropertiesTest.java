@@ -22,6 +22,7 @@ class QueryToolsPropertiesTest {
         assertTrue(props.getCaseService().isEnabled());
         assertTrue(props.getIdentity().isEnabled());
         assertTrue(props.getManagement().isEnabled());
+        assertTrue(props.getXml().isEnabled());
     }
 
     @Test

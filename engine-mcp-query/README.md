@@ -8,7 +8,7 @@ A read-only [MCP](https://modelcontextprotocol.io/) server extension for the [Fl
 
 ### Available Tools
 
-The extension ships tool components covering eleven engine services:
+The extension ships tool components covering twelve engine services:
 
 #### RuntimeService (`RuntimeQueryMcpTools`)
 
@@ -75,6 +75,17 @@ The extension ships tool components covering eleven engine services:
 | `queryBatches`        | Find batch operations (e.g. instance migration, deletion, set-retries) by id, type, activity state, and tenant.   |
 | `querySchemaLog`      | Find schema log entries recording the database schema version history.                                            |
 
+#### RepositoryService — XML models (`XMLMcpTools`)
+
+| Tool                              | Description                                                                                     |
+| --------------------------------- | ----------------------------------------------------------------------------------------------- |
+| `getProcessModelXml`              | Return the raw BPMN 2.0 XML source of a deployed process definition.                           |
+| `getDecisionModelXml`             | Return the raw DMN 1.1 XML source of a deployed decision definition.                           |
+| `getDecisionRequirementsModelXml` | Return the raw DMN 1.1 XML source of a deployed decision requirements definition (DRG).        |
+| `getCaseModelXml`                 | Return the raw CMMN 1.0 XML source of a deployed case definition.                              |
+
+Unlike the query tools, XML tools accept a single ID parameter and return the complete XML document as a string rather than a list of result DTOs.
+
 #### HistoryService (`HistoryQueryMcpTools`)
 
 | Tool                                 | Description                                                                                                          |
@@ -122,7 +133,7 @@ No additional configuration is required — the extension picks up the engine se
 ## How It Works
 
 1. **Auto-configuration** registers each tool class as a Spring bean, guarded by a `@ConditionalOnProperty` toggle.
-2. **Tool classes** (`RuntimeQueryMcpTools`, `RepositoryQueryMcpTools`, `TaskQueryMcpTools`, `ExternalTaskQueryMcpTools`, `AuthorizationQueryMcpTools`, `FilterQueryMcpTools`, `CaseQueryMcpTools`, `IdentityQueryMcpTools`, `ManagementQueryMcpTools`, `HistoryQueryMcpTools`) inject their respective engine service and expose `@McpTool`-annotated methods.
+2. **Tool classes** (`RuntimeQueryMcpTools`, `RepositoryQueryMcpTools`, `TaskQueryMcpTools`, `ExternalTaskQueryMcpTools`, `AuthorizationQueryMcpTools`, `FilterQueryMcpTools`, `CaseQueryMcpTools`, `IdentityQueryMcpTools`, `ManagementQueryMcpTools`, `HistoryQueryMcpTools`, `XMLMcpTools`) inject their respective engine service and expose `@McpTool`-annotated methods.
 3. Each tool method:
    - Accepts a query DTO (e.g. `ProcessInstanceQueryDto`) describing the filter criteria, and an optional `maxResults` parameter.
    - Builds a native engine query (`RuntimeService.createProcessInstanceQuery()`, etc.) by applying only the non-null filters from the DTO.
@@ -155,6 +166,7 @@ Each engine service's tools can be enabled or disabled as a group. All services 
 | `fluxnova.mcp.query.tools.case-service.enabled`  | `true`  | Enable CaseService tools          |
 | `fluxnova.mcp.query.tools.identity.enabled`      | `true`  | Enable IdentityService tools      |
 | `fluxnova.mcp.query.tools.management.enabled`    | `true`  | Enable ManagementService tools    |
+| `fluxnova.mcp.query.tools.xml.enabled`           | `true`  | Enable XML model retrieval tools  |
 
 ### Per-Tool Exclusion
 
@@ -248,6 +260,21 @@ Pass `maxResults` as a separate tool parameter (e.g. `10`) to limit how many res
 }
 ```
 
+### Retrieve the BPMN XML for a process definition
+
+First use `queryProcessDefinitions` to find the process definition ID, then call `getProcessModelXml` with that ID. The tool returns the full BPMN 2.0 XML string, e.g.:
+
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" ...>
+  <process id="invoice-approval" name="Invoice Approval" isExecutable="true">
+    ...
+  </process>
+</definitions>
+```
+
+The same pattern applies to DMN files via `getDecisionModelXml` / `getDecisionRequirementsModelXml`, and CMMN files via `getCaseModelXml`.
+
 ## Project Structure
 
 ```
@@ -293,7 +320,8 @@ src/main/java/org/finos/fluxnova/ai/mcp/query/
     ├── TaskQueryMcpTools.java                # MCP tools for TaskService queries
     ├── ExternalTaskQueryMcpTools.java        # MCP tools for ExternalTaskService queries
     ├── AuthorizationQueryMcpTools.java       # MCP tools for AuthorizationService queries
-    └── FilterQueryMcpTools.java              # MCP tools for FilterService queries
+    ├── FilterQueryMcpTools.java              # MCP tools for FilterService queries
+    └── XMLMcpTools.java                      # MCP tools for raw XML model retrieval (BPMN, DMN, CMMN)
 ```
 
 ## Design Principles
